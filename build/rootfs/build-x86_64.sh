@@ -26,9 +26,8 @@ main() {
   rm -rf "$WORK"
   mkdir -p "$WORK" "$OUTPUT"
 
-  log "Stage 1: debootstrap (minimal base)..."
+  log "Stage 1: debootstrap (minbase only)..."
   debootstrap --arch=amd64 --variant=minbase \
-    --include="$(IFS=,; echo "${DEBOOTSTRAP_PACKAGES[*]}")" \
     "$SUITE" "$CHROOT" "$MIRROR"
 
   log "Stage 2: mount chroot and install desktop..."

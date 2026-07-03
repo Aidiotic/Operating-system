@@ -4,10 +4,8 @@
 
 set -euo pipefail
 
-# Minimal packages for debootstrap --include (keep small; desktop goes in chroot).
-DEBOOTSTRAP_PACKAGES=(
-  systemd
-  systemd-sysv
+# Packages installed inside chroot after debootstrap (not during).
+CHROOT_BASE_PACKAGES=(
   network-manager
   sudo
   bash-completion
@@ -65,6 +63,8 @@ install_desktop_packages() {
   local chroot="$1"
 
   chroot "$chroot" apt-get update
+  chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends "${CHROOT_BASE_PACKAGES[@]}"
   chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends locales
   chroot "$chroot" sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
