@@ -12,14 +12,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap debian-archive-keyring xz-utils
+          sudo apt-get install -y debootstrap xz-utils
 
       - name: Build x86_64 rootfs
         run: sudo ./build/rootfs/build-x86_64.sh
