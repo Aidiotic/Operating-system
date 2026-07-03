@@ -1,0 +1,23 @@
+# Build artifacts
+releases/
+build/output/
+build/rootfs/work/
+build/rootfs/chroot/
+build/iso/work/
+build/utm/work/
+installer/releases/
+installer/dl/
+*.tar.xz
+*.tar.gz
+*.iso
+*.utm
+
+# Asahi installer cache
+/tmp/nexusos-install/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

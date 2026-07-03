@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# NexusOS Software Center — install/remove packages via apt.
+
+set -euo pipefail
+
+STORE_DIR="/usr/share/nexusos/nexus-store"
+CATALOG="${STORE_DIR}/catalog.json"
+
+log() { printf '[nexus-store] %s\n' "$*"; }
+
+usage() {
+  cat <<EOF
+NexusOS Software Center
+
+Usage:
+  nexus-store                    Interactive software center
+  nexus-store list               List available packages
+  nexus-store install <package>  Install a package
+  nexus-store remove <package>   Remove a package
+  nexus-store search <query>     Search catalog
+
+Also available: sudo apt install <package>
+EOF
+}
+
+list_packages() {
+  if [[ -f "$CATALOG" ]] && command -v python3 >/dev/null 2>&1; then
+    python3 -c "
+import json
+with open('$CATALOG') as f:
+    for p in json.load(f):
+        print(f\"{p['name']:20} {p['summary']}\")
+"
+  else
+    apt list --installed 2>/dev/null | head -30
+  fi
+}
+
+search_packages() {
+  local query="$1"
+  apt-cache search "$query" 2>/dev/null || log "Package cache not available."
+}
+
+install_package() {
+  local pkg="$1"
+  log "Installing ${pkg}..."
+  sudo apt-get update -qq
+  sudo apt-get install -y "$pkg"
+  echo "$(date -Iseconds) install ${pkg}" >> /var/log/nexus/store.log 2>/dev/null || true
+  log "Installed ${pkg}."
+}
+
+remove_package() {
+  local pkg="$1"
+  log "Removing ${pkg}..."
+  sudo apt-get remove -y "$pkg"
+  echo "$(date -Iseconds) remove ${pkg}" >> /var/log/nexus/store.log 2>/dev/null || true
+  log "Removed ${pkg}."
+}
+
+interactive() {
+  echo "╔══════════════════════════════════════╗"
+  echo "║       NexusOS Software Center        ║"
+  echo "╚══════════════════════════════════════╝"
+  echo
+  list_packages
+  echo
+  read -r -p "Install package name (or Enter to exit): " pkg
+  [[ -n "$pkg" ]] && install_package "$pkg"
+}
+
+case "${1:-}" in
+  list) list_packages ;;
+  install) install_package "${2:?Package name required}" ;;
+  remove) remove_package "${2:?Package name required}" ;;
+  search) search_packages "${2:?Search query required}" ;;
+  help|--help|-h) usage ;;
+  "") interactive ;;
+  *) die "Unknown command: $1" ;;
+esac

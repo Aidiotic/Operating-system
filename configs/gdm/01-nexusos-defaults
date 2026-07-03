@@ -1,0 +1,10 @@
+# NexusOS GDM dconf defaults
+[org/gnome/desktop/interface]
+gtk-theme='Adwaita'
+color-scheme='prefer-dark'
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/nexusos/default.svg'
+
+[org/gnome/login-screen]
+logo='/usr/share/pixmaps/nexusos-logo.svg'

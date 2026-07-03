@@ -1,0 +1,6 @@
+# NexusOS GRUB theme
++ title-text: "NexusOS"
++ title-color: "#51a2da"
++ message-color: "#ffffff"
++ message-bg-color: "#1a1a2e"
++ desktop-color: "#0f0f1a"

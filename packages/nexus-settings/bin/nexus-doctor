@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# NexusOS system diagnostics.
+
+set -euo pipefail
+
+echo "NexusOS Doctor — System Diagnostics"
+echo "===================================="
+echo
+
+checks=0
+pass=0
+
+check() {
+  local name="$1"
+  local result="$2"
+  checks=$((checks + 1))
+  if [[ "$result" == "ok" ]]; then
+    echo "[PASS] $name"
+    pass=$((pass + 1))
+  else
+    echo "[FAIL] $name — $result"
+  fi
+}
+
+# OS identity
+[[ -f /etc/os-release ]] && grep -q NexusOS /etc/os-release && check "OS release" "ok" || check "OS release" "missing NexusOS branding"
+
+# Network
+ping -c1 -W2 8.8.8.8 >/dev/null 2>&1 && check "Network" "ok" || check "Network" "no connectivity"
+
+# Disk space
+free_pct="$(df / | awk 'NR==2 {print $5}' | tr -d '%')"
+[[ "$free_pct" -lt 90 ]] && check "Disk space" "ok" || check "Disk space" "${free_pct}% used on /"
+
+# Services
+systemctl is-active NetworkManager >/dev/null 2>&1 && check "NetworkManager" "ok" || check "NetworkManager" "not running"
+
+# Logs
+[[ -d /var/log/nexus ]] && check "Nexus log dir" "ok" || check "Nexus log dir" "missing"
+
+# Tools
+for tool in nexus-store nexus-update firefox nautilus; do
+  command -v "$tool" >/dev/null 2>&1 && check "$tool installed" "ok" || check "$tool installed" "not found"
+done
+
+echo
+echo "Results: ${pass}/${checks} checks passed"
+
+if [[ "$pass" -eq "$checks" ]]; then
+  exit 0
+else
+  exit 1
+fi

@@ -1,0 +1,29 @@
+{
+  "distro": "NexusOS",
+  "version": "1.0.0",
+  "repo_base": "https://github.com/aidiotic/operating-system/releases/download/v1.0.0",
+  "images": {
+    "aarch64": {
+      "filename": "nexusos-aarch64-rootfs.tar.xz",
+      "description": "NexusOS for Apple Silicon Macs",
+      "kernel": "asahi",
+      "initramfs": true
+    },
+    "x86_64": {
+      "filename": "nexusos-x86_64-rootfs.tar.xz",
+      "description": "NexusOS for x86_64 (WSL2 / dual-boot)",
+      "kernel": "generic",
+      "initramfs": true
+    }
+  },
+  "partitions": {
+    "efi_mb": 512,
+    "boot_mb": 1024,
+    "min_root_gb": 20
+  },
+  "branding": {
+    "name": "NexusOS",
+    "logo": "nexusos",
+    "support_url": "https://github.com/aidiotic/operating-system/issues"
+  }
+}

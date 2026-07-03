@@ -1,0 +1,28 @@
+name: Build ISO
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debootstrap xorriso grub-pc-bin grub-efi-amd64-bin mtools
+
+      - name: Build rootfs and ISO
+        run: |
+          sudo ./build/rootfs/build-x86_64.sh
+          sudo ./build/iso/build-iso.sh
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexusos-x86_64-iso
+          path: releases/nexusos-x86_64.iso
+          retention-days: 7

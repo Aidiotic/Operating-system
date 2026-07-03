@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# NexusOS system update manager.
+
+set -euo pipefail
+
+log() { printf '[nexus-update] %s\n' "$*"; }
+
+check_updates() {
+  log "Checking for updates..."
+  sudo apt-get update -qq
+  local upgradable
+  upgradable="$(apt list --upgradable 2>/dev/null | grep -c upgradable || echo 0)"
+  log "${upgradable} packages can be upgraded."
+  apt list --upgradable 2>/dev/null | grep -v "^Listing" || true
+}
+
+apply_updates() {
+  log "Applying system updates..."
+  sudo apt-get update
+  sudo apt-get upgrade -y
+  sudo apt-get autoremove -y
+  echo "$(date -Iseconds) system upgrade" >> /var/log/nexus/update.log 2>/dev/null || true
+  log "Updates complete. Reboot recommended: sudo reboot"
+}
+
+case "${1:-apply}" in
+  check) check_updates ;;
+  apply) apply_updates ;;
+  *)
+    echo "Usage: nexus-update [check|apply]"
+    exit 1
+    ;;
+esac
