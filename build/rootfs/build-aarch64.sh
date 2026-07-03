@@ -30,7 +30,7 @@ PACKAGES=(
   firefox-esr
   gnome-terminal nautilus
   gnome-calculator gnome-text-editor
-  software-properties-gnome
+  gnome-software
   apt-transport-https ca-certificates curl wget
   neofetch htop
   locales

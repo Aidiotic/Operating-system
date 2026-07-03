@@ -19,7 +19,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap xz-utils
+          sudo apt-get install -y debootstrap debian-archive-keyring xz-utils
 
       - name: Build aarch64 rootfs
         run: sudo ./build/rootfs/build-aarch64.sh
