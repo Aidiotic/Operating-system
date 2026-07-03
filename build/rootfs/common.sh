@@ -30,6 +30,16 @@ DESKTOP_PACKAGES=(
   htop
 )
 
+# Fast CI smoke-test profile (skips heavy GNOME metapackage).
+if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
+  DESKTOP_PACKAGES=(
+    firefox-esr
+    gnome-terminal
+    htop
+    neofetch
+  )
+fi
+
 setup_chroot_mounts() {
   local chroot="$1"
   mount --bind /dev "${chroot}/dev"
