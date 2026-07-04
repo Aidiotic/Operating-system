@@ -4,6 +4,10 @@
 set -euo pipefail
 
 show_about() {
+  if command -v nexus-neofetch >/dev/null 2>&1; then
+    nexus-neofetch
+    return
+  fi
   echo "╔══════════════════════════════════════╗"
   echo "║         NexusOS System Info          ║"
   echo "╚══════════════════════════════════════╝"
