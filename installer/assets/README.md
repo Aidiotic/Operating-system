@@ -1,7 +1,17 @@
 # NexusOS installer assets
 
-Place a macOS `.icns` logo here as `nexusos.icns` for the branded m1n1 boot screen.
+Custom branding for the vendored Asahi installer (m1n1 boot logo).
 
-`installer/build.sh` exports `LOGO=<this-dir>/nexusos.icns` when the file exists. If absent, the upstream Asahi artwork submodule logo is used (dual-boot logic unchanged).
+| File | Purpose |
+|------|---------|
+| `nexusos.icns` | macOS icon used as m1n1 boot logo (`LOGO` in `installer/build.sh`) |
+| `nexusos-logo.svg` | Source artwork (NexusOS ring + mark, `#51a2da` on `#0f0f1a`) |
+| `generate-icns.sh` | Regenerate `.icns` from SVG (needs `librsvg2-bin`, `icnsutils`) |
 
-Do **not** modify `installer/upstream/` directly — branding is applied via environment variables and optional `LOGO` at build time per [Asahi downstream policy](https://asahilinux.org/docs/alt/policy/).
+`installer/build.sh` and `installer/patches/apply.sh` export `LOGO=<this-dir>/nexusos.icns` when present. Dual-boot / APFS logic in upstream is unchanged.
+
+Regenerate after editing the SVG:
+
+```bash
+./installer/assets/generate-icns.sh
+```
