@@ -21,6 +21,10 @@ fi
 
 "${ROOT}/installer/patches/apply.sh"
 
+if [[ -f "${ROOT}/installer/assets/nexusos.icns" ]]; then
+  export LOGO="${ROOT}/installer/assets/nexusos.icns"
+fi
+
 cd "$UPSTREAM"
 git submodule update --init --depth 1 m1n1 artwork asahi_firmware 2>/dev/null || \
   log "Submodule init partial — build may fetch deps online"

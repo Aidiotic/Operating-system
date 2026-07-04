@@ -1,0 +1,6 @@
+Package: nexus-welcome
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: NexusOS <[email protected]>
+Description: NexusOS first-boot welcome wizard

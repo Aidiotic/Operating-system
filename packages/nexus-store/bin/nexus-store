@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# NexusOS Software Center — install/remove packages via NexusOS repo + apt.
+# NexusOS Software Center — installs from the NexusOS APT repository and Debian.
 
 set -euo pipefail
 
 CATALOG="/usr/share/nexusos/catalog.json"
 NEXUS_APT="/etc/apt/sources.list.d/nexusos.list"
+KEYRING="/usr/share/keyrings/nexusos-archive-keyring.gpg"
 
 log() { printf '[nexus-store] %s\n' "$*"; }
 die() { printf '[nexus-store] ERROR: %s\n' "$*" >&2; exit 1; }
@@ -15,19 +16,29 @@ NexusOS Software Center
 
 Usage:
   nexus-store                    Interactive software center
-  nexus-store list               List available packages
+  nexus-store list               List catalog packages
+  nexus-store refresh            Update NexusOS + Debian package indices
   nexus-store install <package>  Install a package
   nexus-store remove <package>   Remove a package
-  nexus-store search <query>     Search catalog
+  nexus-store search <query>     Search package cache
 
-Updates prefer the NexusOS APT repository when configured.
+Packages install from the NexusOS APT repo when configured (${NEXUS_APT:-not configured}).
 EOF
 }
 
-refresh_apt() {
-  if [[ -f "$NEXUS_APT" ]]; then
-    log "Refreshing NexusOS package index..."
+ensure_nexus_repo() {
+  if [[ ! -f "$NEXUS_APT" ]]; then
+    log "NexusOS apt source not configured — using Debian mirrors only"
+    return 0
   fi
+  if [[ ! -f "$KEYRING" ]]; then
+    log "WARN: NexusOS archive keyring missing at ${KEYRING}"
+  fi
+}
+
+refresh_apt() {
+  ensure_nexus_repo
+  log "Updating package indices (NexusOS repo + Debian)..."
   sudo apt-get update -qq
 }
 
@@ -46,6 +57,7 @@ with open('$CATALOG') as f:
 
 search_packages() {
   local query="$1"
+  refresh_apt
   apt-cache search "$query" 2>/dev/null || log "Package cache not available."
 }
 
@@ -56,7 +68,7 @@ install_package() {
   if apt-cache show "$pkg" >/dev/null 2>&1; then
     sudo apt-get install -y "$pkg"
   else
-    sudo apt-get install -y "$pkg"
+    die "Package not found in apt cache: ${pkg}"
   fi
   echo "$(date -Iseconds) install ${pkg}" >> /var/log/nexus/store.log 2>/dev/null || true
   log "Installed ${pkg}."
@@ -75,7 +87,10 @@ interactive() {
   echo "║       NexusOS Software Center        ║"
   echo "╚══════════════════════════════════════╝"
   echo
-  [[ -f "$NEXUS_APT" ]] && echo "Source: NexusOS APT repository"
+  if [[ -f "$NEXUS_APT" ]]; then
+    echo "Source: NexusOS APT repository"
+    grep -v '^#' "$NEXUS_APT" | head -1
+  fi
   echo
   list_packages
   echo
@@ -85,6 +100,7 @@ interactive() {
 
 case "${1:-}" in
   list) list_packages ;;
+  refresh) refresh_apt; log "Package index updated." ;;
   install) install_package "${2:?Package name required}" ;;
   remove) remove_package "${2:?Package name required}" ;;
   search) search_packages "${2:?Search query required}" ;;

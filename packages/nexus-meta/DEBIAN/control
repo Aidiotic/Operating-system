@@ -1,0 +1,8 @@
+Package: nexus-meta
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: NexusOS <[email protected]>
+Depends: nexus-keyring, nexus-store, nexus-settings, nexus-welcome, nexus-theme
+Description: NexusOS core system packages
+ Metapackage installing the NexusOS software center, settings, welcome wizard, and theme.

@@ -21,16 +21,32 @@ pkg_pool_path() {
 write_control() {
   local dir="$1" pkg="$2" depends="${3:-}" arch="${4:-all}"
   mkdir -p "${dir}/DEBIAN"
-  cat > "${dir}/DEBIAN/control" <<EOF
+  local src="${ROOT}/packages/${pkg}/DEBIAN/control"
+  if [[ -f "$src" ]]; then
+    cp "$src" "${dir}/DEBIAN/control"
+    if [[ -n "$depends" ]] && ! grep -q '^Depends:' "${dir}/DEBIAN/control"; then
+      echo "Depends: ${depends}" >> "${dir}/DEBIAN/control"
+    fi
+  else
+    cat > "${dir}/DEBIAN/control" <<EOF
 Package: ${pkg}
-Version: ${PKG_VERSION}
 Section: misc
 Priority: optional
-Architecture: ${arch}
 Maintainer: NexusOS <[email protected]>
 Description: NexusOS ${pkg}
 ${depends:+Depends: ${depends}}
 EOF
+  fi
+  if grep -q '^Version:' "${dir}/DEBIAN/control"; then
+    sed -i "s/^Version:.*/Version: ${PKG_VERSION}/" "${dir}/DEBIAN/control"
+  else
+    sed -i "/^Package:/a Version: ${PKG_VERSION}" "${dir}/DEBIAN/control"
+  fi
+  if grep -q '^Architecture:' "${dir}/DEBIAN/control"; then
+    sed -i "s/^Architecture:.*/Architecture: ${arch}/" "${dir}/DEBIAN/control"
+  else
+    echo "Architecture: ${arch}" >> "${dir}/DEBIAN/control"
+  fi
 }
 
 build_deb() {
@@ -101,7 +117,7 @@ main() {
   build_deb nexus-settings
   build_deb nexus-welcome
   build_deb nexus-theme
-  build_deb nexus-meta "nexus-keyring, nexus-store, nexus-settings, nexus-welcome, nexus-theme"
+  build_deb nexus-meta
 
   log "Done: ${OUT}/"
 }

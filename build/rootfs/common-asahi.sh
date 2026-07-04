@@ -45,9 +45,9 @@ apply_asahi_overlays() {
   mkdir -p "${chroot}/etc/nexusos"
   echo "asahi" > "${chroot}/etc/nexusos/platform"
   mkdir -p "${chroot}/etc/kernel"
-  if [[ ! -f "${chroot}/etc/kernel/cmdline" ]]; then
-    cat > "${chroot}/etc/kernel/cmdline" <<'EOF'
-root=UUID=auto rw quiet splash loglevel=3
-EOF
+  if [[ -f "${ROOT}/build/rootfs/overlays/etc/kernel/cmdline" ]]; then
+    cp "${ROOT}/build/rootfs/overlays/etc/kernel/cmdline" "${chroot}/etc/kernel/cmdline"
+  elif [[ ! -f "${chroot}/etc/kernel/cmdline" ]]; then
+    echo 'root=UUID=auto rw quiet splash loglevel=3' > "${chroot}/etc/kernel/cmdline"
   fi
 }

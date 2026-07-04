@@ -1,0 +1,7 @@
+Package: nexus-store
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: NexusOS <[email protected]>
+Description: NexusOS Software Center
+ NexusOS catalog and apt front-end for installing applications.

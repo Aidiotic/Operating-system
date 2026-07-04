@@ -200,6 +200,21 @@ NexusOS is a **two-layer** distribution (similar in spirit to Fedora Asahi Remix
 - **UTM** — macOS virtualization bundle (aarch64)
 - **ISO** — dual-boot x86_64 image
 
+### How NexusOS compares
+
+| | **Asahi Linux** | **Fedora Asahi Remix** | **NexusOS** |
+|---|-----------------|------------------------|-------------|
+| Role | Platform + reference distro | Downstream Fedora spin | Downstream Debian-based distro |
+| Boot chain | Owns m1n1 / U-Boot | Uses Asahi | Uses Asahi (unchanged) |
+| Kernel | Asahi-patched | Asahi-patched, Fedora branding | Asahi-patched, `-nexusos` branding |
+| Rootfs | Custom | Fedora | Debian bookworm + GNOME |
+| Package manager | `dnf` / RPM | `dnf` | `apt` + NexusOS repo |
+| Software center | GNOME Software | GNOME Software | `nexus-store` / `nexus-pkg` |
+| Installer | alx.sh | Fedora downstream | NexusOS-branded downstream |
+| x86_64 / WSL | No | Limited | Yes (generic Debian path) |
+
+NexusOS is a **custom distro on Asahi** for Apple Silicon — not an independent platform replacement.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

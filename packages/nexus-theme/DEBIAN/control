@@ -1,0 +1,7 @@
+Package: nexus-theme
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: NexusOS <[email protected]>
+Description: NexusOS desktop theme assets
+ Wallpapers and GTK styling for the NexusOS desktop.

@@ -24,6 +24,7 @@ ASAHI_PACKAGES=(
 PLATFORM_PACKAGES=(
   asahi-audio
   asahi-wifi
+  asahi-ble
   mesa-asahi
 )
 

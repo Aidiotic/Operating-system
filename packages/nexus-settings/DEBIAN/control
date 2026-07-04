@@ -1,0 +1,7 @@
+Package: nexus-settings
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: NexusOS <[email protected]>
+Description: NexusOS system settings and maintenance tools
+ Includes nexus-update, nexus-settings, nexus-doctor, and nexus-pkg.

@@ -28,11 +28,13 @@ check() {
 # OS identity
 [[ -f /etc/os-release ]] && grep -q NexusOS /etc/os-release && check "OS release" "ok" || check "OS release" "missing NexusOS"
 
-# Kernel branding
+# Kernel branding (required on Apple Silicon)
 if uname -r | grep -q nexusos; then
   check "NexusOS kernel" "ok"
+elif [[ "$arch" == "aarch64" || "$arch" == "arm64" ]]; then
+  check "NexusOS kernel" "uname -r lacks nexusos" "1"
 else
-  check "NexusOS kernel" "uname -r lacks nexusos (may use generic kernel on x86_64)" "0"
+  check "NexusOS kernel" "uname -r lacks nexusos (generic x86_64 kernel)" "0"
 fi
 
 # Platform file
@@ -49,10 +51,10 @@ fi
 
 # Asahi firmware (aarch64 only)
 if [[ "$arch" == "aarch64" || "$arch" == "arm64" ]]; then
-  if dpkg -l 2>/dev/null | grep -q asahi; then
+  if dpkg -l 2>/dev/null | grep -qE 'asahi-audio|asahi-wifi|mesa-asahi'; then
     check "Asahi platform packages" "ok"
   else
-    check "Asahi platform packages" "not installed" "0"
+    check "Asahi platform packages" "not installed"
   fi
 fi
 
@@ -69,7 +71,7 @@ fi
 
 # Core metapackage
 dpkg -l nexus-meta 2>/dev/null | grep -q ^ii && check "nexus-meta installed" "ok" \
-  || check "nexus-meta installed" "not installed" "0"
+  || check "nexus-meta installed" "not installed"
 
 # Tools
 for tool in nexus-store nexus-pkg nexus-update firefox; do

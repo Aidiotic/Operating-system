@@ -3,13 +3,14 @@ Version: 1.0.0-1
 Architecture: all
 Maintainer: NexusOS <[email protected]>
 Filename: /workspace/docs/repo/pool/main/n/nexus-keyring/nexus-keyring_1.0.0-1_all.deb
-Size: 1786
-MD5sum: 7b97875f49b5bfbeb0c789dd67c9fbce
-SHA1: 29dca5ec36f45421d28fe51046856f21b8d80c3b
-SHA256: 0d69ce4a661f15a971419b6633e747c48a6d649ab3725a1d1231f6fc82486f50
+Size: 1828
+MD5sum: d3ef02dbe6ab84c57b94eeeb66b8bc63
+SHA1: 7e4ba8220ba6fb4e62fb3ce0487ecc29ade5929a
+SHA256: 97c1cdd2aae0f12139b605e1d2160cea9f507360e917ec96c51a92b2d4e265c1
 Section: misc
-Priority: optional
-Description: NexusOS nexus-keyring
+Priority: required
+Description: NexusOS archive signing public key
+ Trust anchor for the NexusOS APT repository.
 
 Package: nexus-meta
 Version: 1.0.0-1
@@ -17,63 +18,67 @@ Architecture: all
 Maintainer: NexusOS <[email protected]>
 Depends: nexus-keyring, nexus-store, nexus-settings, nexus-welcome, nexus-theme
 Filename: /workspace/docs/repo/pool/main/n/nexus-meta/nexus-meta_1.0.0-1_all.deb
-Size: 530
-MD5sum: 9a54d1bb8982d49bb34de7dd1b4f3b7c
-SHA1: 3ba8034d30fea9117024b9646eb8b3ee517bb181
-SHA256: aabdcbd37b69520e8c50681ca603e2ba4a00adf1712e1e762ec1949e5a0954ca
+Size: 592
+MD5sum: f358235b33ba404f54d0d2ad55f328a6
+SHA1: 6f6f806b00d18fffae37b1965da1a458cad2f34e
+SHA256: 18bd81dbc7d05b182515207c957814c609b95ff8dde6ff177057977dcb73cd02
 Section: misc
 Priority: optional
-Description: NexusOS nexus-meta
+Description: NexusOS core system packages
+ Metapackage installing the NexusOS software center, settings, welcome wizard, and theme.
 
 Package: nexus-settings
 Version: 1.0.0-1
 Architecture: all
 Maintainer: NexusOS <[email protected]>
 Filename: /workspace/docs/repo/pool/main/n/nexus-settings/nexus-settings_1.0.0-1_all.deb
-Size: 2758
-MD5sum: 7ea63dd70508a9dbe0f7f18a7a1e3a22
-SHA1: 109736e66544a7e4ca55375896d67c507dca0bc2
-SHA256: 9cb499b4ac125ace0ed6dcdfa95459200c6bcfc463f230ded36fccce0d383f1b
+Size: 2860
+MD5sum: 9d218ee90b702470ade8b2d09ab97aa3
+SHA1: 0528f2e116dc8ec9d2f1ec2658e166719c7c006d
+SHA256: cf74ecef4203a5111cc15825fc4571af3fb0db6a5edbf2c01241d6f07827d0c0
 Section: misc
 Priority: optional
-Description: NexusOS nexus-settings
+Description: NexusOS system settings and maintenance tools
+ Includes nexus-update, nexus-settings, nexus-doctor, and nexus-pkg.
 
 Package: nexus-store
 Version: 1.0.0-1
 Architecture: all
 Maintainer: NexusOS <[email protected]>
 Filename: /workspace/docs/repo/pool/main/n/nexus-store/nexus-store_1.0.0-1_all.deb
-Size: 1920
-MD5sum: 43851f3e9dfe796234290d56a62f8be5
-SHA1: 92f23b9b538abe759b2d70bfe61fffb4930b1e79
-SHA256: a4dc4826ede7ca754a621c20c88d7e3f33c73c1b2a748cd1c14cde6c2e9f3956
+Size: 2294
+MD5sum: 52628da42a8c388f7e321de9373f0489
+SHA1: 53a85b30623f25d765a7a40ddfe05b7415f77e50
+SHA256: 24bd46af4320b6c87468c07dcae2a77ef192e8f3944166893a2b0750db77c772
 Section: misc
 Priority: optional
-Description: NexusOS nexus-store
+Description: NexusOS Software Center
+ NexusOS catalog and apt front-end for installing applications.
 
 Package: nexus-theme
 Version: 1.0.0-1
 Architecture: all
 Maintainer: NexusOS <[email protected]>
 Filename: /workspace/docs/repo/pool/main/n/nexus-theme/nexus-theme_1.0.0-1_all.deb
-Size: 990
-MD5sum: aa09c2c98dd15e5f8f8ef73a9f843f54
-SHA1: d8b4e8f5f76c1c8e6500991e41803313b52bb577
-SHA256: a5aa12aca3a2cad2302aecfe57bbc54383e23893dcc263dad095f36ddbe623a6
+Size: 1026
+MD5sum: 2ee1cd972604c5ae837b58a77bc83c92
+SHA1: ecda1028ddf11170c2d983080d8002dbae65bd32
+SHA256: 7f23031cefdaa77b3a8c093c61646536e26550c141be6a36641d160631db8bc7
 Section: misc
 Priority: optional
-Description: NexusOS nexus-theme
+Description: NexusOS desktop theme assets
+ Wallpapers and GTK styling for the NexusOS desktop.
 
 Package: nexus-welcome
 Version: 1.0.0-1
 Architecture: all
 Maintainer: NexusOS <[email protected]>
 Filename: /workspace/docs/repo/pool/main/n/nexus-welcome/nexus-welcome_1.0.0-1_all.deb
-Size: 1436
-MD5sum: 49db71133576208147cdda5f19977f97
-SHA1: 4d78b31a4a259603e6a22d323238e3e33437543e
-SHA256: 9c99a3485e8c8779ff32d81460d523e3a2325479c902928dca0122de87a5abca
+Size: 1446
+MD5sum: bdea168dd35a29299c98ba93014b36b7
+SHA1: 46afc5ec65ed269704d50fdd087e190ebb0df668
+SHA256: fd6b8bd704478e7f153a15539139d21b39a23d48755c8a4abf26cda7c221f2e8
 Section: misc
 Priority: optional
-Description: NexusOS nexus-welcome
+Description: NexusOS first-boot welcome wizard
 

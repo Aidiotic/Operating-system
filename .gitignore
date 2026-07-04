@@ -20,7 +20,6 @@ installer/dl/
 
 # GPG private material (never commit)
 packages/nexus-keyring/private_key_b64.txt.NOT_FOR_COMMIT
-packages/nexus-keyring/*.asc
 
 # Editor / OS
 .DS_Store

@@ -32,6 +32,7 @@ case "${1:-}" in
   remove) nexus-store remove "${2:?package name required}" ;;
   search) nexus-store search "${2:?query required}" ;;
   update) exec nexus-update apply ;;
+  refresh) nexus-store refresh ;;
   list) nexus-store list ;;
   help|--help|-h) usage ;;
   *) usage; exit 1 ;;

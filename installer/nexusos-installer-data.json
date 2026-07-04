@@ -4,13 +4,28 @@
   "platform": "asahi",
   "repo_base": "https://github.com/Aidiotic/Operating-system/releases/download/v1.0.0",
   "apt_repo": "https://aidiotic.github.io/Operating-system/repo stable main",
-  "kernel_package": "linux-image-asahi",
+  "kernel_package": "nexusos-asahi-kernel_1.0.0_arm64.deb",
   "firmware": "asahi",
+  "firmware_packages": [
+    "asahi-audio",
+    "asahi-wifi",
+    "asahi-ble",
+    "mesa-asahi"
+  ],
   "images": {
     "aarch64": {
       "filename": "nexusos-aarch64-rootfs.tar.xz",
       "description": "NexusOS for Apple Silicon Macs",
       "kernel": "asahi",
+      "kernel_package": "nexusos-asahi-kernel_1.0.0_arm64.deb",
+      "kernel_package_url": "https://github.com/Aidiotic/Operating-system/releases/download/v1.0.0/nexusos-asahi-kernel_1.0.0_arm64.deb",
+      "firmware": "asahi",
+      "firmware_packages": [
+        "asahi-audio",
+        "asahi-wifi",
+        "asahi-ble",
+        "mesa-asahi"
+      ],
       "initramfs": true
     },
     "x86_64": {

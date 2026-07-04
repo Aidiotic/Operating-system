@@ -1,0 +1,7 @@
+Package: nexus-keyring
+Section: misc
+Priority: required
+Architecture: all
+Maintainer: NexusOS <[email protected]>
+Description: NexusOS archive signing public key
+ Trust anchor for the NexusOS APT repository.
