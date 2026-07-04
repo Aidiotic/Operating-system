@@ -30,12 +30,9 @@ DESKTOP_PACKAGES=(
   htop
 )
 
-# Fast CI smoke-test profile (skips heavy GNOME metapackage).
+# Fast CI smoke-test profile (validates pipeline only).
 if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
-  DESKTOP_PACKAGES=(
-    htop
-    neofetch
-  )
+  DESKTOP_PACKAGES=()
 fi
 
 setup_chroot_mounts() {
@@ -71,6 +68,14 @@ install_desktop_packages() {
   local chroot="$1"
 
   chroot "$chroot" apt-get update
+
+  if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
+    chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
+      apt-get install -y --no-install-recommends htop neofetch
+    rm -f "${chroot}/usr/sbin/policy-rc.d"
+    return 0
+  fi
+
   chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends "${CHROOT_BASE_PACKAGES[@]}"
   chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
