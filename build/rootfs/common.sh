@@ -92,7 +92,9 @@ install_desktop_packages() {
 
 finalize_rootfs() {
   local chroot="$1"
-  chroot "$chroot" apt-get clean
+  if [[ "${NEXUSOS_CI_MINIMAL:-0}" != "1" ]]; then
+    chroot "$chroot" apt-get clean
+  fi
   rm -rf "${chroot}/var/lib/apt/lists"/*
 }
 
