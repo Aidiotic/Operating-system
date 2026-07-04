@@ -33,8 +33,6 @@ DESKTOP_PACKAGES=(
 # Fast CI smoke-test profile (skips heavy GNOME metapackage).
 if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
   DESKTOP_PACKAGES=(
-    firefox-esr
-    gnome-terminal
     htop
     neofetch
   )
@@ -96,11 +94,17 @@ pack_rootfs() {
   local chroot="$1"
   local output="$2"
   local name="$3"
+  local archive="${output}/${name}"
 
-  tar -C "$chroot" -cJf "${output}/${name}" .
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "${output}/${name}" >> "${output}/SHA256SUMS"
+  if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
+    tar -C "$chroot" -cf - . | xz -1 -T0 > "$archive"
   else
-    shasum -a 256 "${output}/${name}" >> "${output}/SHA256SUMS"
+    tar -C "$chroot" -cJf "$archive" .
+  fi
+
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$archive" >> "${output}/SHA256SUMS"
+  else
+    shasum -a 256 "$archive" >> "${output}/SHA256SUMS"
   fi
 }
