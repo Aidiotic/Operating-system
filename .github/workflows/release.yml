@@ -7,8 +7,60 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
+  build-kernel:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bc bison flex libssl-dev libelf-dev ccache git wget
+      - run: |
+          chmod +x build/kernel/*.sh
+          ASAHI_KERNEL_USE_PREBUILT=1 ./build/kernel/build-asahi-kernel.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: asahi-kernel-deb
+          path: releases/nexusos-asahi-kernel_*_arm64.deb
+          if-no-files-found: warn
+
+  publish-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev apt-utils gnupg
+      - name: Publish signed APT repo
+        env:
+          NEXUSOS_APT_GPG_PRIVATE_KEY: ${{ secrets.NEXUSOS_APT_GPG_PRIVATE_KEY }}
+          NEXUSOS_APT_GPG_KEY_ID: ${{ secrets.NEXUSOS_APT_GPG_KEY_ID }}
+        run: |
+          chmod +x build/packages/build-debs.sh build/repo/*.sh
+          ./build/repo/publish-repo.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apt-repo
+          path: docs/repo/
+
+  build-installer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: |
+          chmod +x installer/*.sh installer/patches/*.sh
+          ./installer/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-bundle
+          path: installer/releases/
+
   build-x86_64:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -16,7 +68,10 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap xz-utils xorriso grub-pc-bin grub-efi-amd64-bin
+          sudo apt-get install -y debootstrap xz-utils xorriso grub-pc-bin grub-efi-amd64-bin dpkg-dev
+      - run: |
+          chmod +x build/packages/build-debs.sh build/repo/*.sh
+          ./build/packages/build-debs.sh
       - run: sudo env NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-x86_64.sh
       - run: sudo ./build/iso/build-iso.sh || true
       - uses: actions/upload-artifact@v4
@@ -26,13 +81,21 @@ jobs:
 
   build-aarch64:
     runs-on: ubuntu-24.04-arm
+    needs: [build-kernel]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: asahi-kernel-deb
+          path: releases/
       - run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap xz-utils zip
-      - run: sudo env NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-aarch64.sh
+          sudo apt-get install -y debootstrap xz-utils dpkg-dev apt-utils
+      - run: |
+          chmod +x build/packages/build-debs.sh build/kernel/*.sh
+          ./build/packages/build-debs.sh
+      - run: sudo env NEXUSOS_CI_MINIMAL=0 ASAHI_KERNEL_USE_PREBUILT=0 ./build/rootfs/build-aarch64.sh
       - run: ./build/utm/build-utm.sh
       - uses: actions/upload-artifact@v4
         with:
@@ -40,7 +103,7 @@ jobs:
           path: releases/
 
   release:
-    needs: [build-x86_64, build-aarch64]
+    needs: [build-x86_64, build-aarch64, publish-repo, build-installer]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,11 +115,32 @@ jobs:
       - name: Prepare release directory
         run: |
           mkdir -p release
-          find artifacts -type f \( -name "*.tar.xz" -o -name "*.iso" -o -name "*.utm" \) -exec cp {} release/ \;
-          cd release && sha256sum * > SHA256SUMS 2>/dev/null || shasum -a 256 * > SHA256SUMS
+          find artifacts -type f \( -name "*.tar.xz" -o -name "*.tar.gz" -o -name "*.iso" -o -name "*.utm" -o -name "*.deb" -o -name "latest" -o -name "nexusos-installer-data.json" \) -exec cp {} release/ \;
+          if [[ -f artifacts/installer-bundle/latest ]]; then
+            cp artifacts/installer-bundle/latest release/installer-latest
+          fi
+          cd release && sha256sum * 2>/dev/null > SHA256SUMS || shasum -a 256 * > SHA256SUMS
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: release/*
           generate_release_notes: true
+
+  deploy-pages:
+    needs: [publish-repo]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: apt-repo
+          path: docs/repo
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/repo
+      - id: deployment
+        uses: actions/deploy-pages@v4

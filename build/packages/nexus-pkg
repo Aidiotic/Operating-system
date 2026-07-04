@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# NexusOS unified package manager CLI.
+
+set -euo pipefail
+
+log() { printf '[nexus-pkg] %s\n' "$*"; }
+die() { printf '[nexus-pkg] ERROR: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+  cat <<EOF
+NexusOS Package Manager
+
+  nexus-pkg install <package>   Install from NexusOS catalog
+  nexus-pkg remove <package>    Remove package
+  nexus-pkg search <query>      Search catalog
+  nexus-pkg update              Apply system updates
+  nexus-pkg list                List catalog packages
+EOF
+}
+
+install_pkg() {
+  local pkg="$1"
+  if command -v nexus-store >/dev/null 2>&1; then
+    exec nexus-store install "$pkg"
+  fi
+  sudo apt-get update -qq
+  sudo apt-get install -y "$pkg"
+}
+
+case "${1:-}" in
+  install) install_pkg "${2:?package name required}" ;;
+  remove) nexus-store remove "${2:?package name required}" ;;
+  search) nexus-store search "${2:?query required}" ;;
+  update) exec nexus-update apply ;;
+  list) nexus-store list ;;
+  help|--help|-h) usage ;;
+  *) usage; exit 1 ;;
+esac

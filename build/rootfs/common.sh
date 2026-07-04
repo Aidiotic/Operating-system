@@ -4,7 +4,8 @@
 
 set -euo pipefail
 
-# Packages installed inside chroot after debootstrap (not during).
+ROOT_COMMON="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
 CHROOT_BASE_PACKAGES=(
   network-manager
   sudo
@@ -14,23 +15,25 @@ CHROOT_BASE_PACKAGES=(
   curl
   wget
   locales
+  gnupg
 )
 
-# Desktop and apps installed via apt inside chroot.
+# Curated desktop — no gnome-core metapackage, no gnome-software.
 DESKTOP_PACKAGES=(
-  gnome-core
   gdm3
-  firefox-esr
+  gnome-session
+  gnome-shell
+  gnome-control-center
   gnome-terminal
   nautilus
   gnome-calculator
-  gnome-text-editor
-  gnome-software
+  firefox-esr
   neofetch
   htop
+  plymouth
+  plymouth-label
 )
 
-# Fast CI smoke-test profile (validates pipeline only).
 if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
   DESKTOP_PACKAGES=()
 fi
@@ -57,7 +60,12 @@ deb http://deb.debian.org/debian bookworm-updates main
 deb http://security.debian.org/debian-security bookworm-security main
 EOF
 
-  # Prevent service start during package configuration.
+  if [[ -f "${ROOT_COMMON}/build/rootfs/overlays/etc/apt/sources.list.d/nexusos.list" ]]; then
+    mkdir -p "${chroot}/etc/apt/sources.list.d"
+    cp "${ROOT_COMMON}/build/rootfs/overlays/etc/apt/sources.list.d/nexusos.list" \
+      "${chroot}/etc/apt/sources.list.d/nexusos.list"
+  fi
+
   cat > "${chroot}/usr/sbin/policy-rc.d" <<'EOF'
 #!/bin/sh
 exit 101
@@ -84,16 +92,52 @@ install_desktop_packages() {
   chroot "$chroot" sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
   chroot "$chroot" locale-gen
 
-  chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
-    apt-get install -y --no-install-recommends "${DESKTOP_PACKAGES[@]}"
+  if [[ ${#DESKTOP_PACKAGES[@]} -gt 0 ]]; then
+    chroot "$chroot" env DEBIAN_FRONTEND=noninteractive \
+      apt-get install -y --no-install-recommends "${DESKTOP_PACKAGES[@]}"
+  fi
 
   rm -f "${chroot}/usr/sbin/policy-rc.d"
+}
+
+install_nexus_debs() {
+  local chroot="$1"
+  local deb_dir="${ROOT_COMMON}/releases/debs"
+
+  [[ -d "$deb_dir" ]] || return 0
+  mkdir -p "${chroot}/tmp/nexus-debs"
+  cp "${deb_dir}"/*.deb "${chroot}/tmp/nexus-debs/" 2>/dev/null || return 0
+
+  chroot "$chroot" bash -c 'dpkg -i /tmp/nexus-debs/*.deb 2>/dev/null || true; apt-get install -f -y'
+  rm -rf "${chroot}/tmp/nexus-debs"
+}
+
+apply_theme_and_branding() {
+  local chroot="$1"
+  local root="${ROOT_COMMON}"
+
+  if [[ -d "${root}/configs/plymouth" ]]; then
+    mkdir -p "${chroot}/usr/share/plymouth/themes/nexusos"
+    cp -a "${root}/configs/plymouth/." "${chroot}/usr/share/plymouth/themes/nexusos/"
+    echo "nexusos" > "${chroot}/etc/plymouth/plymouthd.conf" 2>/dev/null || \
+      mkdir -p "${chroot}/etc/plymouth" && echo -e "[Daemon]\nTheme=nexusos" > "${chroot}/etc/plymouth/plymouthd.conf"
+  fi
+
+  if [[ -d "${root}/configs/grub" ]]; then
+    mkdir -p "${chroot}/boot/grub/themes/nexusos"
+    cp -a "${root}/configs/grub/." "${chroot}/boot/grub/themes/nexusos/" 2>/dev/null || true
+  fi
+
+  if [[ -f "${root}/configs/gdm/01-nexusos-defaults" ]]; then
+    mkdir -p "${chroot}/etc/dconf/db/local.d"
+    cp "${root}/configs/gdm/01-nexusos-defaults" "${chroot}/etc/dconf/db/local.d/"
+  fi
 }
 
 finalize_rootfs() {
   local chroot="$1"
   if [[ "${NEXUSOS_CI_MINIMAL:-0}" != "1" ]]; then
-    chroot "$chroot" apt-get clean
+    chroot "$chroot" apt-get clean 2>/dev/null || true
   fi
   rm -rf "${chroot}/var/lib/apt/lists"/*
 }

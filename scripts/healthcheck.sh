@@ -15,7 +15,7 @@ pass() { echo "[OK] $*"; }
 fail_msg() { echo "[FAIL] $*"; fail=1; }
 
 # Shell syntax
-for f in install.sh scripts/*.sh build/rootfs/*.sh installer/*.sh; do
+for f in install.sh scripts/*.sh build/rootfs/*.sh build/kernel/*.sh build/packages/*.sh build/repo/*.sh installer/*.sh installer/patches/*.sh; do
   [[ -f "$f" ]] || continue
   bash -n "$f" || fail_msg "syntax: $f"
 done
@@ -30,6 +30,14 @@ pass "JSON configs"
 grep -q NexusOS os-release || fail_msg "os-release missing NexusOS"
 grep -q Aidiotic/Operating-system os-release || fail_msg "os-release repo URL"
 pass "os-release"
+
+# APT keyring (public only)
+[[ -f packages/nexus-keyring/nexusos-archive-keyring.gpg ]] || fail_msg "missing archive public key"
+pass "archive keyring"
+
+# Repo layout
+[[ -f docs/repo/dists/stable/Release ]] || fail_msg "docs/repo not published — run build/repo/publish-repo.sh"
+pass "APT repo layout"
 
 # Platform detect
 out="$(./scripts/detect-platform.sh)"

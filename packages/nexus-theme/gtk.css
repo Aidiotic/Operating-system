@@ -1,0 +1,11 @@
+/* NexusOS GTK theme overrides */
+@define-color nexus_accent #51a2da;
+
+window {
+  background-color: #1a1a2e;
+}
+
+button {
+  background-color: @nexus_accent;
+  color: #ffffff;
+}

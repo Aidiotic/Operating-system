@@ -1,6 +1,6 @@
 # NexusOS
 
-A real custom Linux operating system for **Mac** and **Windows**. Clone the repo and run the installer — like [Asahi Linux](https://asahilinux.org), but a completely custom distro with its own desktop, browser, app store, and maintenance tools.
+A custom Linux distribution for **Mac** and **Windows**. Clone the repo and run the installer — like [Asahi Linux](https://asahilinux.org), with NexusOS branding, packages, and desktop tools on top of the Asahi platform where Apple Silicon hardware requires it.
 
 ## Quick Install
 
@@ -134,7 +134,11 @@ installer/                 Asahi downstream Mac installer adapter
 build/rootfs/              debootstrap rootfs builders
 build/iso/                 Dual-boot ISO builder
 build/utm/                 macOS UTM VM builder
-build/kernel/              Kernel config fragments
+build/kernel/              Asahi kernel build + platform fetch
+build/packages/            .deb package builder
+build/repo/                Signed APT repo for GitHub Pages
+docs/repo/                 Published APT tree (Pages)
+installer/                 Vendored Asahi installer + NexusOS metadata
 packages/                  NexusOS custom tools (store, settings, welcome)
 configs/                   Plymouth, GRUB, GDM branding
 .github/workflows/         CI build and release pipelines
@@ -168,18 +172,33 @@ GitHub Actions publishes:
 - `nexusos-x86_64-rootfs.tar.xz` — WSL2 / ISO
 - `nexusos-x86_64.iso` — Dual-boot
 - `nexusos-aarch64.utm` — Mac UTM VM
+- `installer-*.tar.gz` — Branded macOS installer
+- `nexusos-asahi-kernel_*_arm64.deb` — Kernel package
 - `SHA256SUMS` — Checksums
+
+The NexusOS APT repository is deployed to GitHub Pages at `https://aidiotic.github.io/Operating-system/repo/`.
 
 ## Architecture
 
-NexusOS is a custom Linux distribution built on:
+NexusOS is a **two-layer** distribution (similar in spirit to Fedora Asahi Remix):
 
-- **Debian bookworm** base rootfs with GNOME
-- **Asahi Linux** boot chain for Apple Silicon native install
-- **WSL2** import for Windows
-- **UTM** for macOS virtualization
+| Layer | What it provides | NexusOS owns? |
+|-------|------------------|---------------|
+| **Platform (Asahi)** | m1n1 → U-Boot boot chain, Apple Silicon kernel patches, firmware, Mesa, WiFi/audio | Uses upstream; dual-boot logic unchanged |
+| **Distro (NexusOS)** | Debian bookworm rootfs, GNOME desktop, `nexus-*` packages, APT repo, branding, installers | Yes |
 
-Apple Silicon hardware support (GPU, WiFi, speakers) comes from Asahi kernel patches — the same foundation used by Fedora Asahi Remix.
+### Platform vs distro
+
+- **Apple Silicon native install** — vendored [Asahi installer](https://github.com/AsahiLinux/asahi-installer) with NexusOS metadata; boot chain and recovery/APFS handling stay upstream.
+- **Kernel** — built from [Asahi Linux kernel](https://github.com/AsahiLinux/linux) with `LOCALVERSION=-nexusos`, or prebuilt `linux-image-asahi` from `repo.asahilinux.org` when building on non-arm hosts.
+- **Packages** — `nexus-store`, `nexus-settings`, `nexus-theme`, etc. ship as `.deb` files from the NexusOS APT repo on [GitHub Pages](https://aidiotic.github.io/Operating-system/repo/).
+- **x86_64 / WSL2 / ISO** — generic Debian rootfs without Asahi platform packages.
+
+### Install paths
+
+- **WSL2** — Windows import of x86_64 rootfs tarball
+- **UTM** — macOS virtualization bundle (aarch64)
+- **ISO** — dual-boot x86_64 image
 
 ## License
 

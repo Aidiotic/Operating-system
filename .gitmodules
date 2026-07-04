@@ -1,0 +1,3 @@
+[submodule "installer/upstream"]
+	path = installer/upstream
+	url = https://github.com/AsahiLinux/asahi-installer.git

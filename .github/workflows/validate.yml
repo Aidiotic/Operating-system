@@ -24,5 +24,7 @@ jobs:
 
       - name: Run healthcheck
         run: |
-          chmod +x install.sh scripts/*.sh scripts/healthcheck.sh build/**/*.sh installer/*.sh packages/*/bin/* 2>/dev/null || true
+          chmod +x install.sh scripts/*.sh scripts/healthcheck.sh \
+            build/kernel/*.sh build/packages/*.sh build/repo/*.sh build/rootfs/*.sh \
+            installer/*.sh installer/patches/*.sh packages/*/bin/* 2>/dev/null || true
           ./scripts/healthcheck.sh

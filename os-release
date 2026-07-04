@@ -1,10 +1,11 @@
 NAME="NexusOS"
 VERSION="1.0.0"
 ID=nexusos
-ID_LIKE=debian
 VERSION_ID="1.0"
 VERSION_CODENAME=nexus
 PRETTY_NAME="NexusOS 1.0"
+NEXUSOS_CHANNEL=stable
+BUILD_ID=nexus-1.0.0
 HOME_URL="https://github.com/Aidiotic/Operating-system"
 SUPPORT_URL="https://github.com/Aidiotic/Operating-system/issues"
 BUG_REPORT_URL="https://github.com/Aidiotic/Operating-system/issues"

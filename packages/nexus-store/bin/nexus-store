@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# NexusOS Software Center — install/remove packages via apt.
+# NexusOS Software Center — install/remove packages via NexusOS repo + apt.
 
 set -euo pipefail
 
-STORE_DIR="/usr/share/nexusos/nexus-store"
-CATALOG="${STORE_DIR}/catalog.json"
+CATALOG="/usr/share/nexusos/catalog.json"
+NEXUS_APT="/etc/apt/sources.list.d/nexusos.list"
 
 log() { printf '[nexus-store] %s\n' "$*"; }
 die() { printf '[nexus-store] ERROR: %s\n' "$*" >&2; exit 1; }
@@ -20,8 +20,15 @@ Usage:
   nexus-store remove <package>   Remove a package
   nexus-store search <query>     Search catalog
 
-Also available: sudo apt install <package>
+Updates prefer the NexusOS APT repository when configured.
 EOF
+}
+
+refresh_apt() {
+  if [[ -f "$NEXUS_APT" ]]; then
+    log "Refreshing NexusOS package index..."
+  fi
+  sudo apt-get update -qq
 }
 
 list_packages() {
@@ -45,8 +52,12 @@ search_packages() {
 install_package() {
   local pkg="$1"
   log "Installing ${pkg}..."
-  sudo apt-get update -qq
-  sudo apt-get install -y "$pkg"
+  refresh_apt
+  if apt-cache show "$pkg" >/dev/null 2>&1; then
+    sudo apt-get install -y "$pkg"
+  else
+    sudo apt-get install -y "$pkg"
+  fi
   echo "$(date -Iseconds) install ${pkg}" >> /var/log/nexus/store.log 2>/dev/null || true
   log "Installed ${pkg}."
 }
@@ -63,6 +74,8 @@ interactive() {
   echo "╔══════════════════════════════════════╗"
   echo "║       NexusOS Software Center        ║"
   echo "╚══════════════════════════════════════╝"
+  echo
+  [[ -f "$NEXUS_APT" ]] && echo "Source: NexusOS APT repository"
   echo
   list_packages
   echo
