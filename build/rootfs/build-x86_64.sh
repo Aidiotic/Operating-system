@@ -37,8 +37,14 @@ main() {
   prepare_chroot_apt "$CHROOT"
   install_desktop_packages "$CHROOT"
 
-  log "Stage 3: NexusOS customization..."
-  "${ROOT}/build/rootfs/chroot-setup.sh" "$CHROOT" "x86_64"
+  if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
+    log "Stage 3: CI smoke-test branding..."
+    cp "${ROOT}/os-release" "${CHROOT}/etc/os-release"
+    mkdir -p "${CHROOT}/var/log/nexus"
+  else
+    log "Stage 3: NexusOS customization..."
+    "${ROOT}/build/rootfs/chroot-setup.sh" "$CHROOT" "x86_64"
+  fi
 
   finalize_rootfs "$CHROOT"
   teardown_chroot_mounts "$CHROOT"
