@@ -7,8 +7,13 @@ on:
       - 'build/**'
       - 'packages/**'
       - 'os-release'
+      - 'VERSION'
       - '.github/workflows/build-rootfs-x86_64.yml'
   workflow_dispatch:
+
+concurrency:
+  group: build-x86_64-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

@@ -7,13 +7,13 @@ A real custom Linux operating system for **Mac** and **Windows**. Clone the repo
 ### One-liner
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aidiotic/operating-system/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Aidiotic/Operating-system/main/install.sh | sh
 ```
 
 ### Git clone
 
 ```bash
-git clone https://github.com/aidiotic/operating-system.git
+git clone https://github.com/Aidiotic/Operating-system.git
 cd operating-system
 ./install.sh
 ```
@@ -70,9 +70,15 @@ Requires [UTM](https://mac.getutm.app) (installed automatically via Homebrew if 
 Run in **PowerShell** (not inside WSL):
 
 ```powershell
-git clone https://github.com/aidiotic/operating-system.git
-cd operating-system
-bash install.sh --wsl
+git clone https://github.com/Aidiotic/Operating-system.git
+cd Operating-system
+.\install.ps1
+```
+
+Or one-liner:
+
+```powershell
+irm https://raw.githubusercontent.com/Aidiotic/Operating-system/main/install.ps1 | iex
 ```
 
 Then launch:
@@ -110,6 +116,14 @@ sudo ./build/iso/build-iso.sh
 ```
 
 Build artifacts land in `releases/`.
+
+## Developer Commands
+
+```bash
+make validate        # lint + healthcheck
+make build-x86_64    # full rootfs (sudo, Linux only)
+make clean           # remove build output
+```
 
 ## Project Structure
 

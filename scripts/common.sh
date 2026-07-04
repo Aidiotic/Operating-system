@@ -4,8 +4,9 @@
 
 set -euo pipefail
 
-NEXUSOS_VERSION="${NEXUSOS_VERSION:-1.0.0}"
-NEXUSOS_REPO="${NEXUSOS_REPO:-aidiotic/operating-system}"
+_nexusos_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+NEXUSOS_VERSION="${NEXUSOS_VERSION:-$(cat "${_nexusos_root}/VERSION" 2>/dev/null || echo 1.0.0)}"
+NEXUSOS_REPO="${NEXUSOS_REPO:-Aidiotic/Operating-system}"
 NEXUSOS_GITHUB="https://github.com/${NEXUSOS_REPO}"
 NEXUSOS_RELEASES="https://github.com/${NEXUSOS_REPO}/releases/download/v${NEXUSOS_VERSION}"
 

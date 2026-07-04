@@ -7,6 +7,7 @@ STORE_DIR="/usr/share/nexusos/nexus-store"
 CATALOG="${STORE_DIR}/catalog.json"
 
 log() { printf '[nexus-store] %s\n' "$*"; }
+die() { printf '[nexus-store] ERROR: %s\n' "$*" >&2; exit 1; }
 
 usage() {
   cat <<EOF

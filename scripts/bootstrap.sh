@@ -4,7 +4,7 @@
 
 set -e
 
-NEXUSOS_REPO="${NEXUSOS_REPO:-aidiotic/operating-system}"
+NEXUSOS_REPO="${NEXUSOS_REPO:-Aidiotic/Operating-system}"
 NEXUSOS_BRANCH="${NEXUSOS_BRANCH:-main}"
 TMP="${TMPDIR:-/tmp}/nexusos-install-$$"
 

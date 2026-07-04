@@ -22,18 +22,7 @@ jobs:
             shellcheck -e SC1091,SC2034,SC2164 "$f" || true
           done
 
-      - name: Verify install.sh is executable logic
+      - name: Run healthcheck
         run: |
-          chmod +x install.sh scripts/*.sh build/**/*.sh installer/*.sh packages/*/bin/* 2>/dev/null || true
-          bash -n install.sh
-          bash -n scripts/detect-platform.sh
-          bash -n scripts/common.sh
-          ./scripts/detect-platform.sh
-
-      - name: Validate JSON configs
-        run: |
-          python3 -m json.tool installer/nexusos-installer-data.json > /dev/null
-          python3 -m json.tool packages/nexus-store/catalog.json > /dev/null
-
-      - name: Verify os-release
-        run: grep -q 'NexusOS' os-release
+          chmod +x install.sh scripts/*.sh scripts/healthcheck.sh build/**/*.sh installer/*.sh packages/*/bin/* 2>/dev/null || true
+          ./scripts/healthcheck.sh

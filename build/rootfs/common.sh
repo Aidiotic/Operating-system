@@ -103,6 +103,10 @@ pack_rootfs() {
   local output="$2"
   local name="$3"
   local archive="${output}/${name}"
+  local sums="${output}/SHA256SUMS"
+
+  mkdir -p "$output"
+  rm -f "$archive"
 
   if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
     tar -C "$chroot" -cf - . | xz -1 -T0 > "$archive"
@@ -110,9 +114,15 @@ pack_rootfs() {
     tar -C "$chroot" -cJf "$archive" .
   fi
 
+  local hash
   if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$archive" >> "${output}/SHA256SUMS"
+    hash="$(sha256sum "$archive" | awk '{print $1}')"
   else
-    shasum -a 256 "$archive" >> "${output}/SHA256SUMS"
+    hash="$(shasum -a 256 "$archive" | awk '{print $1}')"
   fi
+
+  touch "$sums"
+  grep -v "  ${name}$" "$sums" > "${sums}.tmp" 2>/dev/null || true
+  echo "${hash}  ${name}" >> "${sums}.tmp"
+  mv "${sums}.tmp" "$sums"
 }
