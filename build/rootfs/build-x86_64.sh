@@ -41,6 +41,10 @@ main() {
 
     prepare_chroot_apt "$CHROOT"
     install_desktop_packages "$CHROOT"
+    log "Installing x86_64 kernel for ISO/WSL..."
+    chroot "$CHROOT" env DEBIAN_FRONTEND=noninteractive \
+      apt-get install -y --no-install-recommends linux-image-amd64 initramfs-tools
+    chroot "$CHROOT" update-initramfs -u -k all 2>/dev/null || true
     install_nexus_debs "$CHROOT"
     apply_theme_and_branding "$CHROOT"
     mkdir -p "${CHROOT}/etc/nexusos"

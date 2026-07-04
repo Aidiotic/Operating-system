@@ -27,8 +27,8 @@ main() {
   [[ "${confirm,,}" == "y" ]] || die "Installation cancelled."
 
   if [[ "${NEXUSOS_FROM_SOURCE:-0}" == "1" ]]; then
-    log "Building installer from source..."
-    exec "${ROOT}/installer/build-and-run.sh" "$@"
+    log "Building installer from vendored submodule..."
+    exec "${ROOT}/installer/run-installer.sh" --from-source "$@"
   fi
 
   log "Launching Asahi-based NexusOS installer..."

@@ -6,18 +6,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap xz-utils zip
+          sudo apt-get install -y debootstrap xz-utils zip qemu-utils
 
       - name: Build UTM bundle
         run: |
-          sudo ./build/rootfs/build-aarch64.sh
+          chmod +x build/rootfs/*.sh build/utm/build-utm.sh build/kernel/*.sh build/packages/*.sh
+          sudo env NEXUSOS_CI_MINIMAL=1 ASAHI_KERNEL_USE_PREBUILT=1 ./build/rootfs/build-aarch64.sh
           ./build/utm/build-utm.sh
 
       - name: Upload UTM bundle

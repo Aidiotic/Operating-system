@@ -119,8 +119,12 @@ apply_theme_and_branding() {
   if [[ -d "${root}/configs/plymouth" ]]; then
     mkdir -p "${chroot}/usr/share/plymouth/themes/nexusos"
     cp -a "${root}/configs/plymouth/." "${chroot}/usr/share/plymouth/themes/nexusos/"
-    echo "nexusos" > "${chroot}/etc/plymouth/plymouthd.conf" 2>/dev/null || \
-      mkdir -p "${chroot}/etc/plymouth" && echo -e "[Daemon]\nTheme=nexusos" > "${chroot}/etc/plymouth/plymouthd.conf"
+    mkdir -p "${chroot}/etc/plymouth"
+    cat > "${chroot}/etc/plymouth/plymouthd.conf" <<'EOF'
+[Daemon]
+Theme=nexusos
+ShowDelay=0
+EOF
   fi
 
   if [[ -d "${root}/configs/grub" ]]; then

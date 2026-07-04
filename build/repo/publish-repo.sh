@@ -76,13 +76,16 @@ main() {
   done
 
   log "Generating Packages indices..."
-  for arch in amd64 arm64; do
-    mkdir -p "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}"
-    dpkg-scanpackages --arch "$arch" "${REPO_OUT}/pool" /dev/null \
-      > "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}/Packages"
-    gzip -9c "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}/Packages" \
-      > "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}/Packages.gz"
-  done
+  (
+    cd "$REPO_OUT"
+    for arch in amd64 arm64; do
+      mkdir -p "dists/${SUITE}/main/binary-${arch}"
+      dpkg-scanpackages --arch "$arch" pool /dev/null \
+        > "dists/${SUITE}/main/binary-${arch}/Packages"
+      gzip -9c "dists/${SUITE}/main/binary-${arch}/Packages" \
+        > "dists/${SUITE}/main/binary-${arch}/Packages.gz"
+    done
+  )
 
   log "Generating Release..."
   apt-ftparchive -c "${ROOT}/build/repo/apt-ftparchive.conf" \

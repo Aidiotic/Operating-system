@@ -28,7 +28,9 @@ jobs:
           sudo apt-get install -y debootstrap xz-utils
 
       - name: Build x86_64 rootfs
-        run: sudo NEXUSOS_CI_MINIMAL=1 ./build/rootfs/build-x86_64.sh
+        run: |
+          chmod +x build/rootfs/*.sh build/packages/*.sh
+          sudo NEXUSOS_CI_MINIMAL=1 ./build/rootfs/build-x86_64.sh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

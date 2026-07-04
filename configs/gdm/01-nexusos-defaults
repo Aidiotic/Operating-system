@@ -7,4 +7,4 @@ color-scheme='prefer-dark'
 picture-uri='file:///usr/share/backgrounds/nexusos/default.svg'
 
 [org/gnome/login-screen]
-logo='/usr/share/pixmaps/nexusos-logo.svg'
+logo='/usr/share/backgrounds/nexusos/default.svg'

@@ -14,7 +14,7 @@ curl -fsSL https://raw.githubusercontent.com/Aidiotic/Operating-system/main/inst
 
 ```bash
 git clone https://github.com/Aidiotic/Operating-system.git
-cd operating-system
+cd Operating-system
 ./install.sh
 ```
 
@@ -39,7 +39,7 @@ The installer auto-detects your platform and picks the right install method.
 - **nexus-settings** — system info, disk cleanup, factory reset
 - **nexus-doctor** — diagnostics
 - **nexus-welcome** — first-boot setup wizard
-- **Terminal**, Files (Nautilus), Calculator, Text Editor
+- **Terminal**, Files (Nautilus), Calculator
 
 Default login: `nexus` / `nexus` (change on first boot)
 
@@ -91,9 +91,10 @@ GUI apps work via WSLg on Windows 11.
 
 ### Dual-boot ISO
 
-Download `nexusos-x86_64.iso` from [GitHub Releases](https://github.com/aidiotic/operating-system/releases) or build locally:
+Download `nexusos-x86_64.iso` from [GitHub Releases](https://github.com/Aidiotic/Operating-system/releases) or build locally (requires full rootfs with kernel):
 
 ```bash
+sudo NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-x86_64.sh
 sudo ./build/iso/build-iso.sh
 ```
 
@@ -120,7 +121,8 @@ Build artifacts land in `releases/`.
 ## Developer Commands
 
 ```bash
-make validate        # lint + healthcheck
+make validate        # sync versions + healthcheck
+make sync-version    # propagate VERSION to metadata files
 make build-x86_64    # full rootfs (sudo, Linux only)
 make clean           # remove build output
 ```
@@ -130,7 +132,7 @@ make clean           # remove build output
 ```
 install.sh                 Universal installer entrypoint
 scripts/                   Platform-specific installers
-installer/                 Asahi downstream Mac installer adapter
+installer/                 Vendored Asahi installer + NexusOS metadata
 build/rootfs/              debootstrap rootfs builders
 build/iso/                 Dual-boot ISO builder
 build/utm/                 macOS UTM VM builder
@@ -138,7 +140,6 @@ build/kernel/              Asahi kernel build + platform fetch
 build/packages/            .deb package builder
 build/repo/                Signed APT repo for GitHub Pages
 docs/repo/                 Published APT tree (Pages)
-installer/                 Vendored Asahi installer + NexusOS metadata
 packages/                  NexusOS custom tools (store, settings, welcome)
 configs/                   Plymouth, GRUB, GDM branding
 .github/workflows/         CI build and release pipelines

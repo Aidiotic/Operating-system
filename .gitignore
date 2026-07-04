@@ -7,7 +7,7 @@ build/iso/work/
 build/utm/work/
 build/kernel/work/
 build/packages/stage/
-installer/releases/
+installer/stage/
 installer/stage/
 installer/dl/
 *.tar.xz

@@ -29,8 +29,11 @@ fetch_rootfs() {
   local dest="$1"
 
   if [[ "${NEXUSOS_FROM_SOURCE:-0}" == "1" ]]; then
-    log "Building rootfs from source (requires Linux build host)..."
-    "${ROOT}/build/rootfs/build-x86_64.sh"
+    if [[ "$(uname -s)" != "Linux" ]]; then
+      die "--from-source rootfs build requires Linux. On Windows, build with: sudo ./build/rootfs/build-x86_64.sh"
+    fi
+    log "Building x86_64 rootfs from source (requires root)..."
+    sudo env NEXUSOS_CI_MINIMAL=0 "${ROOT}/build/rootfs/build-x86_64.sh"
     cp "${ROOT}/releases/${ARTIFACT}" "$dest"
     return 0
   fi

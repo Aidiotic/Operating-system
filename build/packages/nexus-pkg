@@ -6,6 +6,10 @@ set -euo pipefail
 log() { printf '[nexus-pkg] %s\n' "$*"; }
 die() { printf '[nexus-pkg] ERROR: %s\n' "$*" >&2; exit 1; }
 
+need_store() {
+  command -v nexus-store >/dev/null 2>&1 || die "nexus-store not installed (install nexus-meta)"
+}
+
 usage() {
   cat <<EOF
 NexusOS Package Manager
@@ -13,6 +17,7 @@ NexusOS Package Manager
   nexus-pkg install <package>   Install from NexusOS catalog
   nexus-pkg remove <package>    Remove package
   nexus-pkg search <query>      Search catalog
+  nexus-pkg refresh             Update package indices
   nexus-pkg update              Apply system updates
   nexus-pkg list                List catalog packages
 EOF
@@ -29,11 +34,11 @@ install_pkg() {
 
 case "${1:-}" in
   install) install_pkg "${2:?package name required}" ;;
-  remove) nexus-store remove "${2:?package name required}" ;;
-  search) nexus-store search "${2:?query required}" ;;
-  update) exec nexus-update apply ;;
-  refresh) nexus-store refresh ;;
-  list) nexus-store list ;;
+  remove) need_store; nexus-store remove "${2:?package name required}" ;;
+  search) need_store; nexus-store search "${2:?query required}" ;;
+  refresh) need_store; nexus-store refresh ;;
+  update) command -v nexus-update >/dev/null 2>&1 && exec nexus-update apply || exec apt-get update ;;
+  list) need_store; nexus-store list ;;
   help|--help|-h) usage ;;
   *) usage; exit 1 ;;
 esac

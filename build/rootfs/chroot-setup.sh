@@ -24,7 +24,7 @@ enable_unit() {
   done
 
   [[ -n "$unit_file" ]] || { log "Skipping missing unit: ${unit}"; return 0; }
-  local rel="/${unit_file#${CHROOT}/}"
+  local rel="/${unit_file#"${CHROOT}"/}"
   mkdir -p "${CHROOT}/etc/systemd/system/${target}"
   ln -sf "$rel" "${CHROOT}/etc/systemd/system/${target}/${unit}"
 }

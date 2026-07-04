@@ -28,7 +28,9 @@ jobs:
           sudo apt-get install -y debootstrap xz-utils
 
       - name: Build aarch64 rootfs
-        run: sudo NEXUSOS_CI_MINIMAL=1 ./build/rootfs/build-aarch64.sh
+        run: |
+          chmod +x build/rootfs/*.sh build/kernel/*.sh build/packages/*.sh
+          sudo env NEXUSOS_CI_MINIMAL=1 ASAHI_KERNEL_USE_PREBUILT=1 ./build/rootfs/build-aarch64.sh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

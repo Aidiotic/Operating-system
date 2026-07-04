@@ -1,2 +1,9 @@
-# NexusOS managed packages — do not edit manually
-# Use: nexus-store install <package>
+# NexusOS curated default packages (managed by nexus-meta)
+nexus-meta
+nexus-store
+nexus-settings
+nexus-welcome
+nexus-theme
+firefox-esr
+gnome-shell
+nautilus

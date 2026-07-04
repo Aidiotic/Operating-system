@@ -1,3 +1,3 @@
 VERSION=1.0.0
 CHANNEL=stable
-BUILD_DATE=auto
+BUILD_DATE=template

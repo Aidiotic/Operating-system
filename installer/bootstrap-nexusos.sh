@@ -13,8 +13,9 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NEXUSOS_REPO="${NEXUSOS_REPO:-Aidiotic/Operating-system}"
-NEXUSOS_VERSION="${NEXUSOS_VERSION:-1.0.0}"
+NEXUSOS_VERSION="${NEXUSOS_VERSION:-$(cat "${ROOT}/VERSION" 2>/dev/null || echo 1.0.0)}"
 GITHUB="https://github.com/${NEXUSOS_REPO}"
 
 export DISTRO="NexusOS"

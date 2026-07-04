@@ -61,7 +61,7 @@ verify_checksum() {
   local base
   base="$(basename "$file")"
   local expected
-  expected="$(grep "  ${base}$" "$sums_file" | awk '{print $1}')"
+  expected="$(grep -E "[[:space:]]${base}$" "$sums_file" | awk '{print $1}')"
   [[ -n "$expected" ]] || die "Checksum not found for ${base}"
 
   local actual

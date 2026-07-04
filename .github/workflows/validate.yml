@@ -11,20 +11,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Install shellcheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y shellcheck python3
 
       - name: Lint shell scripts
         run: |
-          find . -name '*.sh' -not -path './installer/upstream/*' | while read -r f; do
+          set -e
+          fail=0
+          while IFS= read -r f; do
             echo "Checking $f"
-            shellcheck -e SC1091,SC2034,SC2164 "$f" || true
-          done
+            shellcheck -e SC1091,SC2034,SC2164 "$f" || fail=1
+          done < <(find . -name '*.sh' \
+            -not -path './installer/upstream/*' \
+            -not -path './installer/stage/*' \
+            -not -path './installer/releases/*')
+          exit "$fail"
 
       - name: Run healthcheck
         run: |
-          chmod +x install.sh scripts/*.sh scripts/healthcheck.sh \
+          chmod +x install.sh scripts/*.sh scripts/healthcheck.sh scripts/sync-version.sh \
             build/kernel/*.sh build/packages/*.sh build/repo/*.sh build/rootfs/*.sh \
-            installer/*.sh installer/patches/*.sh packages/*/bin/* 2>/dev/null || true
+            build/iso/*.sh build/utm/*.sh installer/*.sh installer/patches/*.sh \
+            installer/assets/*.sh packages/*/bin/* 2>/dev/null || true
           ./scripts/healthcheck.sh

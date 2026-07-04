@@ -90,9 +90,10 @@ EOF
       chmod 755 "${dir}/DEBIAN/postinst"
       ;;
     nexus-theme)
-      mkdir -p "${dir}/usr/share/nexusos/theme" "${dir}/usr/share/backgrounds/nexusos"
+      mkdir -p "${dir}/usr/share/nexusos/theme" "${dir}/usr/share/backgrounds/nexusos" "${dir}/usr/share/pixmaps"
       if [[ -f "${ROOT}/packages/nexus-theme/wallpaper.svg" ]]; then
         cp "${ROOT}/packages/nexus-theme/wallpaper.svg" "${dir}/usr/share/backgrounds/nexusos/default.svg"
+        cp "${ROOT}/packages/nexus-theme/wallpaper.svg" "${dir}/usr/share/pixmaps/nexusos-logo.svg"
       fi
       if [[ -f "${ROOT}/packages/nexus-theme/gtk.css" ]]; then
         cp "${ROOT}/packages/nexus-theme/gtk.css" "${dir}/usr/share/nexusos/theme/gtk.css"

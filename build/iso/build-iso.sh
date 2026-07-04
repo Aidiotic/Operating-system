@@ -9,6 +9,7 @@ WORK="${ROOT}/build/iso/work"
 OUTPUT="${ROOT}/releases"
 ISO_NAME="nexusos-x86_64.iso"
 ROOTFS="${ROOT}/releases/nexusos-x86_64-rootfs.tar.xz"
+FS="${WORK}/live/filesystem"
 
 log() { printf '[build-iso] %s\n' "$*"; }
 die() { printf '[build-iso] ERROR: %s\n' "$*" >&2; exit 1; }
@@ -17,21 +18,34 @@ die() { printf '[build-iso] ERROR: %s\n' "$*" >&2; exit 1; }
 command -v xorriso >/dev/null 2>&1 || die "Install xorriso: apt install xorriso"
 command -v grub-mkrescue >/dev/null 2>&1 || die "Install grub: apt install grub-pc-bin grub-efi-amd64-bin"
 
+extract_kernel() {
+  local vmlinuz initrd
+  vmlinuz="$(find "$FS/boot" -maxdepth 1 -name 'vmlinuz-*' 2>/dev/null | sort -V | tail -1)"
+  initrd="$(find "$FS/boot" -maxdepth 1 -name 'initrd.img-*' 2>/dev/null | sort -V | tail -1)"
+
+  [[ -n "$vmlinuz" && -f "$vmlinuz" ]] || die "No kernel in rootfs. Build full x86_64 rootfs first: sudo NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-x86_64.sh"
+  [[ -n "$initrd" && -f "$initrd" ]] || die "No initrd in rootfs. Ensure initramfs-tools is installed in rootfs."
+
+  cp "$vmlinuz" "$WORK/live/vmlinuz"
+  cp "$initrd" "$WORK/live/initrd.img"
+  log "Using kernel: $(basename "$vmlinuz")"
+}
+
 main() {
   log "Building NexusOS ISO..."
 
   if [[ ! -f "$ROOTFS" ]]; then
-    log "Rootfs not found — building first..."
-    "${ROOT}/build/rootfs/build-x86_64.sh"
+    log "Rootfs not found — building full x86_64 rootfs first..."
+    NEXUSOS_CI_MINIMAL=0 "${ROOT}/build/rootfs/build-x86_64.sh"
   fi
 
   rm -rf "$WORK"
   mkdir -p "$WORK"/{iso,live,boot/grub}
-  mkdir -p "$OUTPUT"
+  mkdir -p "$OUTPUT" "$FS"
 
   log "Extracting rootfs for live boot..."
-  mkdir -p "$WORK/live/filesystem"
-  tar -xJf "$ROOTFS" -C "$WORK/live/filesystem"
+  tar -xJf "$ROOTFS" -C "$FS"
+  extract_kernel
 
   cat > "$WORK/boot/grub/grub.cfg" <<'EOF'
 set timeout=10
@@ -48,18 +62,18 @@ menuentry "Install NexusOS (dual-boot)" {
 }
 EOF
 
-  cp "${ROOT}/configs/grub/theme.txt" "$WORK/boot/grub/" 2>/dev/null || true
-
-  # Placeholder kernel/initrd — real CI builds extract from rootfs
-  touch "$WORK/live/vmlinuz" "$WORK/live/initrd.img"
+  if [[ -f "${ROOT}/configs/grub/theme.txt" ]]; then
+    mkdir -p "$WORK/boot/grub/themes/nexusos"
+    cp "${ROOT}/configs/grub/theme.txt" "$WORK/boot/grub/themes/nexusos/"
+    echo 'set theme=(hd0,msdos1)/boot/grub/themes/nexusos/theme.txt' >> "$WORK/boot/grub/grub.cfg"
+  fi
 
   log "Creating ISO with grub-mkrescue..."
-  grub-mkrescue -o "${OUTPUT}/${ISO_NAME}" "$WORK" 2>/dev/null || {
+  if ! grub-mkrescue -o "${OUTPUT}/${ISO_NAME}" "$WORK" 2>/dev/null; then
     xorriso -as mkisofs -r -J -b boot/grub/i386-pc/eltorito.img \
       -no-emul-boot -boot-load-size 4 -boot-info-table \
-      -o "${OUTPUT}/${ISO_NAME}" "$WORK" 2>/dev/null || \
-      die "ISO creation failed — install grub-pc-bin xorriso"
-  }
+      -o "${OUTPUT}/${ISO_NAME}" "$WORK" || die "ISO creation failed"
+  fi
 
   log "Done: ${OUTPUT}/${ISO_NAME}"
 }
