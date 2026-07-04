@@ -17,7 +17,7 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get install -y debootstrap xz-utils xorriso grub-pc-bin grub-efi-amd64-bin
-      - run: sudo ./build/rootfs/build-x86_64.sh
+      - run: sudo env NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-x86_64.sh
       - run: sudo ./build/iso/build-iso.sh || true
       - uses: actions/upload-artifact@v4
         with:
@@ -32,7 +32,7 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get install -y debootstrap xz-utils zip
-      - run: sudo ./build/rootfs/build-aarch64.sh
+      - run: sudo env NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-aarch64.sh
       - run: ./build/utm/build-utm.sh
       - uses: actions/upload-artifact@v4
         with:

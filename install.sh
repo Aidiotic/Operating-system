@@ -47,7 +47,10 @@ parse_args() {
 route_installer() {
   read -r host_os host_arch host_wsl < <("${ROOT}/scripts/detect-platform.sh")
 
+  log "NexusOS Installer v${NEXUSOS_VERSION}"
+  log "https://github.com/${NEXUSOS_REPO}"
   log "Detected: os=${host_os} arch=${host_arch} wsl=${host_wsl}"
+  echo
   export NEXUSOS_FROM_SOURCE="${FROM_SOURCE}"
 
   case "$MODE" in

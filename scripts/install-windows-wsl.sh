@@ -37,7 +37,11 @@ fetch_rootfs() {
 
   local tmp
   tmp="$(mktemp -d)"
-  download_release "$ARTIFACT" "${tmp}/${ARTIFACT}"
+  if ! download_release "$ARTIFACT" "${tmp}/${ARTIFACT}" 2>/dev/null; then
+    warn "No release at ${NEXUSOS_RELEASES}/${ARTIFACT}"
+    warn "Publish a release (git tag v${NEXUSOS_VERSION}) or run: sudo ./build/rootfs/build-x86_64.sh"
+    die "Download failed."
+  fi
   download_release "SHA256SUMS" "${tmp}/SHA256SUMS" || true
   verify_checksum "${tmp}/${ARTIFACT}" "${tmp}/SHA256SUMS"
   cp "${tmp}/${ARTIFACT}" "$dest"

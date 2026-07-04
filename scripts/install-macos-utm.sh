@@ -41,7 +41,11 @@ fetch_utm_bundle() {
 
   local tmp
   tmp="$(mktemp -d)"
-  download_release "$ARTIFACT" "${tmp}/${ARTIFACT}"
+  if ! download_release "$ARTIFACT" "${tmp}/${ARTIFACT}" 2>/dev/null; then
+    warn "No release artifact found at ${NEXUSOS_RELEASES}/${ARTIFACT}"
+    warn "Build locally: ./build/utm/build-utm.sh  or wait for GitHub Release v${NEXUSOS_VERSION}"
+    die "Download failed — tag v${NEXUSOS_VERSION} may not be published yet."
+  fi
   download_release "SHA256SUMS" "${tmp}/SHA256SUMS" || true
   verify_checksum "${tmp}/${ARTIFACT}" "${tmp}/SHA256SUMS"
   cp "${tmp}/${ARTIFACT}" "$utm_path"

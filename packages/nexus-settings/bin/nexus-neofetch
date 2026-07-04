@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# NexusOS ASCII system info (used by neofetch or standalone).
+
+set -euo pipefail
+
+read_os() {
+  [[ -f /etc/os-release ]] && . /etc/os-release
+  echo "${PRETTY_NAME:-NexusOS}"
+}
+
+echo "                 ▄▄▄▄▄▄▄"
+echo "             ▄▄███████████▄▄"
+echo "           ▄█████████████████▄"
+echo "          ████  NEXUS OS  ████"
+echo "           ▀█████████████████▀"
+echo "             ▀▀███████████▀▀"
+echo
+echo "  OS:      $(read_os)"
+echo "  Kernel:  $(uname -r)"
+echo "  Arch:    $(uname -m)"
+echo "  Host:    $(hostname)"
+echo "  Uptime:  $(uptime -p 2>/dev/null || uptime | sed 's/.*up/up/')"

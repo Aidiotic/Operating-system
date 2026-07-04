@@ -58,6 +58,11 @@ for pkg_dir in "${ROOT}"/packages/nexus-*; do
       chmod +x "${CHROOT}/usr/local/bin/$(basename "$bin")"
     done
   fi
+  for desktop in "${pkg_dir}/"*.desktop; do
+    [[ -f "$desktop" ]] || continue
+    mkdir -p "${CHROOT}/usr/share/applications"
+    cp "$desktop" "${CHROOT}/usr/share/applications/"
+  done
 done
 
 if ! grep -q '^nexus:' "${CHROOT}/etc/passwd" 2>/dev/null; then
