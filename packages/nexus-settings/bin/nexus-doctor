@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# NexusOS system diagnostics.
+
+set -euo pipefail
+
+echo "NexusOS Doctor"
+echo "=============="
+echo
+
+checks=0
+pass=0
+arch="$(uname -m)"
+
+check() {
+  local name="$1" result="$2" required="${3:-1}"
+  checks=$((checks + 1))
+  if [[ "$result" == "ok" ]]; then
+    echo "[PASS] $name"
+    pass=$((pass + 1))
+  elif [[ "$required" == "0" ]]; then
+    echo "[WARN] $name — $result"
+    pass=$((pass + 1))
+  else
+    echo "[FAIL] $name — $result"
+  fi
+}
+
+# OS identity
+[[ -f /etc/os-release ]] && grep -q NexusOS /etc/os-release && check "OS release" "ok" || check "OS release" "missing NexusOS"
+
+# Kernel branding
+if uname -r | grep -q nexusos; then
+  check "NexusOS kernel" "ok"
+else
+  check "NexusOS kernel" "uname -r lacks nexusos (may use generic kernel on x86_64)" "0"
+fi
+
+# Platform file
+if [[ -f /etc/nexusos/platform ]]; then
+  plat="$(cat /etc/nexusos/platform)"
+  if [[ "$arch" == "aarch64" || "$arch" == "arm64" ]]; then
+    [[ "$plat" == "asahi" ]] && check "Platform asahi" "ok" || check "Platform asahi" "expected asahi, got $plat"
+  else
+    [[ "$plat" == "generic" ]] && check "Platform generic" "ok" || check "Platform generic" "expected generic, got $plat"
+  fi
+else
+  check "Platform config" "missing /etc/nexusos/platform"
+fi
+
+# Asahi firmware (aarch64 only)
+if [[ "$arch" == "aarch64" || "$arch" == "arm64" ]]; then
+  if dpkg -l 2>/dev/null | grep -q asahi; then
+    check "Asahi platform packages" "ok"
+  else
+    check "Asahi platform packages" "not installed" "0"
+  fi
+fi
+
+# NexusOS repo
+if [[ -f /etc/apt/sources.list.d/nexusos.list ]]; then
+  check "NexusOS apt source" "ok"
+else
+  check "NexusOS apt source" "not configured"
+fi
+
+# Keyring
+[[ -f /usr/share/keyrings/nexusos-archive-keyring.gpg ]] \
+  && check "Archive keyring" "ok" || check "Archive keyring" "missing" "0"
+
+# Core metapackage
+dpkg -l nexus-meta 2>/dev/null | grep -q ^ii && check "nexus-meta installed" "ok" \
+  || check "nexus-meta installed" "not installed" "0"
+
+# Tools
+for tool in nexus-store nexus-pkg nexus-update firefox; do
+  command -v "$tool" >/dev/null 2>&1 && check "$tool" "ok" || check "$tool" "not found" "0"
+done
+
+# Network
+ping -c1 -W2 8.8.8.8 >/dev/null 2>&1 && check "Network" "ok" || check "Network" "no connectivity" "0"
+
+echo
+echo "Results: ${pass}/${checks} checks passed"
+[[ "$pass" -ge $((checks - 2)) ]]

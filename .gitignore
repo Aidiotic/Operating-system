@@ -1,0 +1,30 @@
+# Build artifacts
+releases/
+build/output/
+build/rootfs/work/
+build/rootfs/chroot/
+build/iso/work/
+build/utm/work/
+build/kernel/work/
+build/packages/stage/
+installer/releases/
+installer/stage/
+installer/dl/
+*.tar.xz
+*.tar.gz
+*.iso
+*.utm
+
+# Asahi installer cache
+/tmp/nexusos-install/
+
+# GPG private material (never commit)
+packages/nexus-keyring/private_key_b64.txt.NOT_FOR_COMMIT
+packages/nexus-keyring/*.asc
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

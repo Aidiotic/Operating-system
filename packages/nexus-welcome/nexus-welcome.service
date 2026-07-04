@@ -1,0 +1,13 @@
+[Unit]
+Description=NexusOS First Boot Welcome Wizard
+After=network.target gdm.service
+ConditionPathExists=!/home/nexus/.nexus-welcome-done
+
+[Service]
+Type=oneshot
+User=nexus
+ExecStart=/usr/local/bin/nexus-welcome
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

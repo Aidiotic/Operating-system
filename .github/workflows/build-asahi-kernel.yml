@@ -1,0 +1,45 @@
+name: Build Asahi Kernel
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      use_prebuilt:
+        description: 'Use prebuilt Asahi kernel from repo.asahilinux.org'
+        required: false
+        default: '1'
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential bc bison flex libssl-dev libelf-dev \
+            ccache git wget
+
+      - name: Build or fetch kernel
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.use_prebuilt }}" == "1" ]]; then
+            export ASAHI_KERNEL_USE_PREBUILT=1
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            export ASAHI_KERNEL_USE_PREBUILT=0
+            export NEXUSOS_ALLOW_CROSS_KERNEL=1
+          else
+            export ASAHI_KERNEL_USE_PREBUILT=1
+          fi
+          chmod +x build/kernel/*.sh
+          ./build/kernel/build-asahi-kernel.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexusos-asahi-kernel
+          path: releases/nexusos-asahi-kernel_*_arm64.deb
+          if-no-files-found: error

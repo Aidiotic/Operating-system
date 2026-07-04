@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# NexusOS system settings and maintenance CLI.
+
+set -euo pipefail
+
+show_about() {
+  if command -v nexus-neofetch >/dev/null 2>&1; then
+    nexus-neofetch
+    return
+  fi
+  echo "╔══════════════════════════════════════╗"
+  echo "║         NexusOS System Info          ║"
+  echo "╚══════════════════════════════════════╝"
+  echo
+  [[ -f /etc/os-release ]] && cat /etc/os-release
+  echo
+  echo "Kernel:  $(uname -r)"
+  echo "Arch:    $(uname -m)"
+  echo "Host:    $(hostname)"
+  echo "Uptime:  $(uptime -p 2>/dev/null || uptime)"
+  echo
+  echo "Storage:"
+  df -h / /home 2>/dev/null || df -h /
+}
+
+disk_cleanup() {
+  echo "Cleaning temporary files..."
+  sudo apt-get autoremove -y 2>/dev/null || true
+  sudo apt-get clean 2>/dev/null || true
+  sudo rm -rf /tmp/* 2>/dev/null || true
+  sudo journalctl --vacuum-time=7d 2>/dev/null || true
+  echo "$(date -Iseconds) disk cleanup" >> /var/log/nexus/maintenance.log 2>/dev/null || true
+  echo "Cleanup complete."
+}
+
+factory_reset() {
+  echo "WARNING: This will remove all user data and reset NexusOS settings."
+  read -r -p "Type RESET to confirm: " confirm
+  [[ "$confirm" == "RESET" ]] || { echo "Aborted."; exit 1; }
+  sudo rm -rf /home/nexus/.* /home/nexus/* 2>/dev/null || true
+  echo "User data cleared. Reboot recommended."
+}
+
+case "${1:-about}" in
+  about) show_about ;;
+  cleanup) disk_cleanup ;;
+  reset) factory_reset ;;
+  *)
+    echo "Usage: nexus-settings [about|cleanup|reset]"
+    exit 1
+    ;;
+esac

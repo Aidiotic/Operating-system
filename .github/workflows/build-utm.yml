@@ -1,0 +1,28 @@
+name: Build UTM Bundle
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debootstrap xz-utils zip
+
+      - name: Build UTM bundle
+        run: |
+          sudo ./build/rootfs/build-aarch64.sh
+          ./build/utm/build-utm.sh
+
+      - name: Upload UTM bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexusos-aarch64-utm
+          path: releases/nexusos-aarch64.utm
+          retention-days: 7

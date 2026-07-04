@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# NexusOS first-boot welcome wizard.
+
+set -euo pipefail
+
+FLAG="/home/nexus/.nexus-welcome-done"
+
+run_wizard() {
+  echo
+  echo "  ╔═══════════════════════════════════════════╗"
+  echo "  ║     Welcome to NexusOS!                   ║"
+  echo "  ║     Your custom Linux operating system    ║"
+  echo "  ╚═══════════════════════════════════════════╝"
+  echo
+
+  if [[ "${1:-}" == "--non-interactive" ]]; then
+    touch "$FLAG" 2>/dev/null || true
+    return 0
+  fi
+
+  read -r -p "  Enter your display name [nexus]: " display_name
+  display_name="${display_name:-nexus}"
+
+  read -r -p "  Change password now? [Y/n]: " change_pw
+  if [[ "${change_pw:-Y}" != "n" && "${change_pw:-Y}" != "N" ]]; then
+    passwd
+  fi
+
+  echo
+  echo "  Quick start:"
+  echo "    Firefox       — Web browser"
+  echo "    nexus-store   — Install software"
+  echo "    nexus-update  — System updates"
+  echo "    nexus-settings about — System info"
+  echo "    nexus-doctor  — Run diagnostics"
+  echo
+
+  touch "$FLAG"
+  echo "  Setup complete. Enjoy NexusOS!"
+  echo
+}
+
+if [[ -f "$FLAG" ]] && [[ "${1:-}" != "--force" ]]; then
+  exit 0
+fi
+
+run_wizard "$@"

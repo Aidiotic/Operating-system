@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=NexusOS Software
+Comment=Install and manage applications
+Exec=nexus-store
+Icon=software-center
+Terminal=false
+Type=Application
+Categories=System;PackageManager;
+Keywords=store;software;apps;packages;

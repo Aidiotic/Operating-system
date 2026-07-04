@@ -1,0 +1,50 @@
+[
+  {
+    "name": "htop",
+    "summary": "Interactive process viewer",
+    "category": "System",
+    "essential": false
+  },
+  {
+    "name": "git",
+    "summary": "Distributed version control",
+    "category": "Development",
+    "essential": false
+  },
+  {
+    "name": "vim",
+    "summary": "Vi IMproved text editor",
+    "category": "Editors",
+    "essential": false
+  },
+  {
+    "name": "python3",
+    "summary": "Python 3 programming language",
+    "category": "Development",
+    "essential": false
+  },
+  {
+    "name": "timeshift",
+    "summary": "System restore tool",
+    "category": "System",
+    "essential": false
+  },
+  {
+    "name": "flatpak",
+    "summary": "Application sandbox and distribution framework",
+    "category": "System",
+    "essential": false
+  },
+  {
+    "name": "vlc",
+    "summary": "Multimedia player",
+    "category": "Multimedia",
+    "essential": false
+  },
+  {
+    "name": "gimp",
+    "summary": "GNU Image Manipulation Program",
+    "category": "Graphics",
+    "essential": false
+  }
+]

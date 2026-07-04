@@ -1,0 +1,32 @@
+Architectures: amd64 arm64
+Codename: nexus
+Components: main
+Date: Sat, 04 Jul 2026 09:36:12 +0000
+Description: NexusOS package repository
+Label: NexusOS
+Origin: NexusOS
+Suite: stable
+MD5Sum:
+ 73a8bf977f8c5298c4cf102dc1366ae3              183 Release
+ 0979735d47732ce11becb74808e411e0             2610 main/binary-amd64/Packages
+ ed342e51217b7c8a4b5afe9f2954294b              923 main/binary-amd64/Packages.gz
+ 0979735d47732ce11becb74808e411e0             2610 main/binary-arm64/Packages
+ ed342e51217b7c8a4b5afe9f2954294b              923 main/binary-arm64/Packages.gz
+SHA1:
+ 4b960a4c2968d2a6df8e83dfc81044f516e8d8ac              183 Release
+ 9a622bf0f591c5cb91e50be0d49b10db550ca93d             2610 main/binary-amd64/Packages
+ 3301639ec81af4b1e400f9a76e92c674daf9219d              923 main/binary-amd64/Packages.gz
+ 9a622bf0f591c5cb91e50be0d49b10db550ca93d             2610 main/binary-arm64/Packages
+ 3301639ec81af4b1e400f9a76e92c674daf9219d              923 main/binary-arm64/Packages.gz
+SHA256:
+ 27b72eff6dcdcecdfbe1f04aaf9e7364f88d5aec7951a5f96686089faee2ab50              183 Release
+ a4f2750c8d5eab3f250f1f6a90d0daa6c28f88307aa1d0502a082991a254ecb5             2610 main/binary-amd64/Packages
+ ca75a2b7649486bbabe5b008eaaebb09c48277ab9a251ac3c75d6d6851917154              923 main/binary-amd64/Packages.gz
+ a4f2750c8d5eab3f250f1f6a90d0daa6c28f88307aa1d0502a082991a254ecb5             2610 main/binary-arm64/Packages
+ ca75a2b7649486bbabe5b008eaaebb09c48277ab9a251ac3c75d6d6851917154              923 main/binary-arm64/Packages.gz
+SHA512:
+ 75e4a3ce1da18be162d49825a3a0360ce2b4d324f856c66b76fd3e2e980b489fc49121d2ba647583acadcd177a54f4f6836e26fa332572d9f4c7d8e288aa58ef              183 Release
+ d38bbe0d0db1ec929d2769d182e6fda803e1569bd21cb1f4e2b31b21da03a9913d3afecb1d70038f6ad9d3facf5f50709e16c8f7e8456218a2ff262ffad85f00             2610 main/binary-amd64/Packages
+ e57cf25508b9e3bf7d19da1377d1dfa08551f186d2930067978cd0e34ebd8e497f03142dbfe6b1873f5e63ff00a10b853694a35630b626cc713ce36ab148a80d              923 main/binary-amd64/Packages.gz
+ d38bbe0d0db1ec929d2769d182e6fda803e1569bd21cb1f4e2b31b21da03a9913d3afecb1d70038f6ad9d3facf5f50709e16c8f7e8456218a2ff262ffad85f00             2610 main/binary-arm64/Packages
+ e57cf25508b9e3bf7d19da1377d1dfa08551f186d2930067978cd0e34ebd8e497f03142dbfe6b1873f5e63ff00a10b853694a35630b626cc713ce36ab148a80d              923 main/binary-arm64/Packages.gz

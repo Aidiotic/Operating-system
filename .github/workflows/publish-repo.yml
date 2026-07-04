@@ -1,0 +1,66 @@
+name: Publish APT Repository
+
+on:
+  push:
+    branches: [main, 'cursor/**']
+    paths:
+      - 'packages/**'
+      - 'build/packages/**'
+      - 'build/repo/**'
+      - 'VERSION'
+      - '.github/workflows/publish-repo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-repo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev apt-utils gnupg
+
+      - name: Build repository
+        env:
+          NEXUSOS_APT_GPG_PRIVATE_KEY: ${{ secrets.NEXUSOS_APT_GPG_PRIVATE_KEY }}
+          NEXUSOS_APT_GPG_KEY_ID: ${{ secrets.NEXUSOS_APT_GPG_KEY_ID }}
+        run: |
+          chmod +x build/packages/build-debs.sh build/repo/*.sh
+          ./build/repo/publish-repo.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apt-repo
+          path: docs/repo/
+          retention-days: 14
+
+  deploy-pages:
+    needs: publish
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: apt-repo
+          path: docs/repo
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/repo
+      - id: deployment
+        uses: actions/deploy-pages@v4

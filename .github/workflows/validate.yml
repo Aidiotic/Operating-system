@@ -1,0 +1,30 @@
+name: Validate Install Scripts
+
+on:
+  push:
+    branches: [main, 'cursor/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Lint shell scripts
+        run: |
+          find . -name '*.sh' -not -path './installer/upstream/*' | while read -r f; do
+            echo "Checking $f"
+            shellcheck -e SC1091,SC2034,SC2164 "$f" || true
+          done
+
+      - name: Run healthcheck
+        run: |
+          chmod +x install.sh scripts/*.sh scripts/healthcheck.sh \
+            build/kernel/*.sh build/packages/*.sh build/repo/*.sh build/rootfs/*.sh \
+            installer/*.sh installer/patches/*.sh packages/*/bin/* 2>/dev/null || true
+          ./scripts/healthcheck.sh
