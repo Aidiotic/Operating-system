@@ -30,31 +30,25 @@ main() {
   debootstrap --arch=amd64 --variant=minbase \
     "$SUITE" "$CHROOT" "$MIRROR"
 
-  log "Stage 2: mount chroot and install desktop..."
-  setup_chroot_mounts "$CHROOT"
-  trap 'teardown_chroot_mounts "$CHROOT"' EXIT
-
   if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
-    log "Stage 2b: CI smoke-test (debootstrap only, skip chroot apt)..."
-  else
-    prepare_chroot_apt "$CHROOT"
-    install_desktop_packages "$CHROOT"
-  fi
-
-  if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
-    log "Stage 3: CI smoke-test branding..."
+    log "Stage 2: CI smoke-test branding (no chroot mount)..."
     cp "${ROOT}/os-release" "${CHROOT}/etc/os-release"
     mkdir -p "${CHROOT}/var/log/nexus"
   else
-    log "Stage 3: NexusOS customization..."
+    log "Stage 2: mount chroot and install desktop..."
+    setup_chroot_mounts "$CHROOT"
+    trap 'teardown_chroot_mounts "$CHROOT"' EXIT
+
+    prepare_chroot_apt "$CHROOT"
+    install_desktop_packages "$CHROOT"
     "${ROOT}/build/rootfs/chroot-setup.sh" "$CHROOT" "x86_64"
+    finalize_rootfs "$CHROOT"
+
+    teardown_chroot_mounts "$CHROOT"
+    trap - EXIT
   fi
 
-  finalize_rootfs "$CHROOT"
-  teardown_chroot_mounts "$CHROOT"
-  trap - EXIT
-
-  log "Stage 4: packing tarball..."
+  log "Stage 3: packing tarball..."
   pack_rootfs "$CHROOT" "$OUTPUT" "$RELEASE_NAME"
 
   log "Done: ${OUTPUT}/${RELEASE_NAME}"
