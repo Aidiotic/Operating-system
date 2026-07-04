@@ -34,8 +34,12 @@ main() {
   setup_chroot_mounts "$CHROOT"
   trap 'teardown_chroot_mounts "$CHROOT"' EXIT
 
-  prepare_chroot_apt "$CHROOT"
-  install_desktop_packages "$CHROOT"
+  if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
+    log "Stage 2b: CI smoke-test (debootstrap only, skip chroot apt)..."
+  else
+    prepare_chroot_apt "$CHROOT"
+    install_desktop_packages "$CHROOT"
+  fi
 
   if [[ "${NEXUSOS_CI_MINIMAL:-0}" == "1" ]]; then
     log "Stage 3: CI smoke-test branding..."

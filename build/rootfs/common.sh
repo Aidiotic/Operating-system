@@ -41,6 +41,7 @@ setup_chroot_mounts() {
   mount --bind /dev/pts "${chroot}/dev/pts"
   mount -t proc proc "${chroot}/proc"
   mount -t sysfs sys "${chroot}/sys"
+  cp /etc/resolv.conf "${chroot}/etc/resolv.conf" 2>/dev/null || true
 }
 
 teardown_chroot_mounts() {
