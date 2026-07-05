@@ -195,6 +195,18 @@ NexusOS is a **two-layer** distribution (similar in spirit to Fedora Asahi Remix
 - **Packages** — `nexus-store`, `nexus-settings`, `nexus-theme`, etc. ship as `.deb` files from the NexusOS APT repo on [GitHub Pages](https://aidiotic.github.io/Operating-system/repo/).
 - **x86_64 / WSL2 / ISO** — generic Debian rootfs without Asahi platform packages.
 
+### Kernel version pins (aarch64)
+
+NexusOS tracks Asahi platform releases — we pin versions in [`build/kernel/versions.env`](build/kernel/versions.env), not fork driver code:
+
+| Pin | Current value |
+|-----|---------------|
+| `ASAHI_LINUX_TAG` | `asahi-6.6.0-1` |
+| `ASAHI_REPO_URL` | `https://repo.asahilinux.org/debian/` |
+| `KERNEL_LOCALVERSION` | `-nexusos` |
+
+Update pins when Asahi ships a new stable. Build with `./build/kernel/build-asahi-kernel.sh` (see [`build/kernel/README.md`](build/kernel/README.md) for from-source vs prebuilt fallback).
+
 ### Install paths
 
 - **WSL2** — Windows import of x86_64 rootfs tarball
