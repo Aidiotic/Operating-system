@@ -18,6 +18,8 @@ run_wizard() {
   local force_pw=0
   [[ -f /etc/nexusos/force-password-change ]] && force_pw=1
 
+  # Non-interactive mode is allowed only when no forced password change is pending
+  # (red-team: WSL/automation must not skip mandatory credential rotation).
   if [[ "${1:-}" == "--non-interactive" && "$force_pw" -eq 0 ]]; then
     touch "$FLAG" 2>/dev/null || true
     return 0

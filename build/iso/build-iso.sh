@@ -42,6 +42,7 @@ menuentry "NexusOS Live (try without installing)" {
     initrd /live/initrd.img
 }
 
+# Install entry is a placeholder until a real installer hook exists (preview posture).
 menuentry "Install NexusOS (preview — unavailable)" {
     linux /live/vmlinuz boot=live quiet splash
     initrd /live/initrd.img
