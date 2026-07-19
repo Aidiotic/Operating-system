@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # NexusOS APT repository — pool layout helpers
 
 pkg_pool_path() {

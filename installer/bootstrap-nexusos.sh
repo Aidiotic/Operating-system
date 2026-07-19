@@ -15,6 +15,18 @@ export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 NEXUSOS_REPO="${NEXUSOS_REPO:-Aidiotic/Operating-system}"
 NEXUSOS_VERSION="${NEXUSOS_VERSION:-1.0.0}"
+
+case "$NEXUSOS_REPO" in
+  Aidiotic/Operating-system) ;;
+  *)
+    if [ "${NEXUSOS_ALLOW_FORK_REPO:-0}" = "1" ]; then
+      echo "WARNING: Using non-default NEXUSOS_REPO=${NEXUSOS_REPO} (fork mode)" >&2
+    else
+      echo "ERROR: Unsupported NEXUSOS_REPO=${NEXUSOS_REPO}. Clone the repo and review scripts, or set NEXUSOS_ALLOW_FORK_REPO=1 for a trusted fork." >&2
+      exit 1
+    fi
+    ;;
+esac
 GITHUB="https://github.com/${NEXUSOS_REPO}"
 
 export DISTRO="NexusOS"
@@ -56,6 +68,28 @@ if [ ! -f "$PKG" ]; then
         exit 1
     }
 fi
+
+echo "  Verifying installer checksum..."
+if ! curl --fail --silent --show-error -L -o SHA256SUMS "${INSTALLER_BASE}/SHA256SUMS"; then
+    echo "  ERROR: SHA256SUMS required but missing from release."
+    exit 1
+fi
+_pkg_base="$(basename "$PKG")"
+_expected="$(grep "  ${_pkg_base}$" SHA256SUMS | awk '{print $1}')"
+if [ -z "$_expected" ]; then
+    echo "  ERROR: Checksum not found for ${_pkg_base}"
+    exit 1
+fi
+if command -v sha256sum >/dev/null 2>&1; then
+    _actual="$(sha256sum "$PKG" | awk '{print $1}')"
+else
+    _actual="$(shasum -a 256 "$PKG" | awk '{print $1}')"
+fi
+if [ "$_actual" != "$_expected" ]; then
+    echo "  ERROR: Checksum mismatch for ${_pkg_base}"
+    exit 1
+fi
+echo "  Checksum verified."
 
 echo "  Fetching installer metadata..."
 if ! curl --fail --silent --show-error -L -o installer_data.json "$INSTALLER_DATA"; then

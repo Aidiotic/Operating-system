@@ -93,7 +93,9 @@ wsl -d NexusOS
 
 GUI apps work via WSLg on Windows 11.
 
-### Dual-boot ISO
+### Dual-boot ISO (preview)
+
+**Engineering preview:** live boot only; automated dual-boot installation is not available in v1.0.0.
 
 Download `nexusos-x86_64.iso` from [GitHub Releases](https://github.com/Aidiotic/Operating-system/releases) or build locally:
 
@@ -171,6 +173,8 @@ git push origin v1.0.0
 ```
 
 GitHub Actions publishes:
+
+> **Apple Silicon artifacts** depend on proprietary Apple firmware via the Asahi Linux platform. Obtain counsel before redistributing aarch64 binaries broadly.
 
 - `nexusos-aarch64-rootfs.tar.xz` — Apple Silicon
 - `nexusos-x86_64-rootfs.tar.xz` — WSL2 / ISO

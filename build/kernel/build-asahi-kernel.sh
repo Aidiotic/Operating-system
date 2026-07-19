@@ -35,8 +35,8 @@ build_from_source() {
     KDEB_PKGVERSION="${VERSION}-1"
 
   local deb
-  deb="$(ls -1 ../*image*nexusos*arm64.deb 2>/dev/null | head -1)"
-  [[ -n "$deb" ]] || deb="$(ls -1 ../*linux-image*arm64.deb 2>/dev/null | head -1)"
+  deb="$(find .. -maxdepth 1 -name '*image*nexusos*arm64.deb' -print 2>/dev/null | head -1)"
+  [[ -n "$deb" ]] || deb="$(find .. -maxdepth 1 -name '*linux-image*arm64.deb' -print 2>/dev/null | head -1)"
   [[ -n "$deb" ]] || die "Kernel .deb not found after bindeb-pkg"
 
   cp "$deb" "${OUTPUT}/nexusos-asahi-kernel_${VERSION}_arm64.deb"

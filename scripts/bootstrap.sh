@@ -6,6 +6,18 @@ set -e
 
 NEXUSOS_REPO="${NEXUSOS_REPO:-Aidiotic/Operating-system}"
 NEXUSOS_BRANCH="${NEXUSOS_BRANCH:-main}"
+
+case "$NEXUSOS_REPO" in
+  Aidiotic/Operating-system) ;;
+  *)
+    if [ "${NEXUSOS_ALLOW_FORK_REPO:-0}" = "1" ]; then
+      echo "WARNING: Using non-default NEXUSOS_REPO=${NEXUSOS_REPO} (fork mode)" >&2
+    else
+      echo "ERROR: Unsupported NEXUSOS_REPO=${NEXUSOS_REPO}. Clone the repo and review scripts, or set NEXUSOS_ALLOW_FORK_REPO=1 for a trusted fork." >&2
+      exit 1
+    fi
+    ;;
+esac
 TMP="${TMPDIR:-/tmp}/nexusos-install-$$"
 
 cleanup() { rm -rf "$TMP"; }
