@@ -14,6 +14,6 @@ supported production operating system.
 
 - Sole OS on hardware you cannot afford to recover or repartition
 - Production servers, regulated data, or environments requiring vendor support
-- Redistribution of release binaries without independent legal review
+- Redistribution of Apple Silicon / firmware-dependent **release binaries** (see [REDISTRIBUTION_POLICY.md](REDISTRIBUTION_POLICY.md))
 
 See [DISCLAIMER.md](DISCLAIMER.md) and [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).

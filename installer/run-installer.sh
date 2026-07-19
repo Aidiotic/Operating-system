@@ -82,10 +82,12 @@ main() {
   configure_nexusos_branding
 
   log "Starting NexusOS native installer (m1n1 → U-Boot → NexusOS kernel)..."
-  log "Release artifacts: ${NEXUSOS_RELEASES}"
+  log "Installer is built from this repository (release tarballs are not redistributed)."
   echo
 
-  if run_from_release_tarball 2>/dev/null; then
+  if [[ "${NEXUSOS_SKIP_RELEASE_INSTALLER:-1}" == "1" ]]; then
+    run_from_upstream
+  elif run_from_release_tarball 2>/dev/null; then
     :
   elif run_from_upstream; then
     :

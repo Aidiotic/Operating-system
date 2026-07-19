@@ -28,11 +28,14 @@ The installer auto-detects your platform and picks the right install method.
 
 | Platform | Method | Command |
 |----------|--------|---------|
-| **Mac Apple Silicon** | Native dual-boot (Asahi boot chain) | `./install.sh` or `./install.sh --native` |
-| **Mac (any)** | UTM virtual machine | `./install.sh --utm` |
-| **Mac Intel** | UTM VM (recommended) or EFI ISO | `./install.sh --utm` |
+| **Mac Apple Silicon** | Git clone + native dual-boot (Asahi) | `git clone --recursive … && ./install.sh --native` |
+| **Mac Apple Silicon** | Git clone + UTM VM (build locally) | `./install.sh --utm` |
+| **Mac Intel** | Live ISO (preview) | `./install.sh --iso` |
 | **Windows 10/11** | WSL2 distro | `./install.sh` or `./install.sh --wsl` |
-| **Windows / Linux PC** | Dual-boot ISO (preview — installer stub) | `./install.sh --iso` |
+| **Windows / Linux PC** | Live ISO (preview) | `./install.sh --iso` |
+
+> **Mac users:** Apple Silicon installers run from a **git clone** only — aarch64 release
+> binaries are not published. See [Redistribution Policy](docs/REDISTRIBUTION_POLICY.md).
 
 ## What's Included
 
@@ -51,23 +54,36 @@ Default user: `nexus` — password expires on first login; `nexus-welcome` promp
 
 ### Mac Apple Silicon (native dual-boot)
 
-Requires macOS 13.5+. **Back up with Time Machine first.**
+Requires macOS 13.5+. **Back up with Time Machine first.** **Git clone required** (release
+binaries for Mac are not published).
 
 ```bash
+git clone --recursive https://github.com/Aidiotic/Operating-system.git
+cd Operating-system
 ./install.sh --native
 ```
 
-This uses the [Asahi Linux installer](https://github.com/AsahiLinux/asahi-installer) boot chain (m1n1 → U-Boot → NexusOS kernel) to dual-boot alongside macOS.
+This uses the [Asahi Linux installer](https://github.com/AsahiLinux/asahi-installer) boot chain (m1n1 → U-Boot → NexusOS kernel) to dual-boot alongside macOS. Firmware is obtained through the upstream install flow on your Mac — not via prebuilt NexusOS downloads.
 
-### Mac UTM (virtual machine)
+### Mac UTM (Apple Silicon virtual machine)
 
-No repartitioning required. Works on Apple Silicon and Intel Macs.
+No repartitioning required. **Builds the VM bundle from your clone** (not from Releases).
 
 ```bash
+git clone --recursive https://github.com/Aidiotic/Operating-system.git
+cd Operating-system
 ./install.sh --utm
 ```
 
 Requires [UTM](https://mac.getutm.app) (installed automatically via Homebrew if available).
+
+### Mac Intel
+
+UTM release artifacts are not published for Intel Macs. Use the **live ISO** path:
+
+```bash
+./install.sh --iso
+```
 
 ### Windows WSL2
 
@@ -172,19 +188,19 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-GitHub Actions publishes:
+GitHub Actions publishes **x86_64 artifacts only**:
 
-> **Apple Silicon artifacts** depend on proprietary Apple firmware via the Asahi Linux platform. Obtain counsel before redistributing aarch64 binaries broadly.
-
-- `nexusos-aarch64-rootfs.tar.xz` — Apple Silicon
 - `nexusos-x86_64-rootfs.tar.xz` — WSL2 / ISO
-- `nexusos-x86_64.iso` — Dual-boot
-- `nexusos-aarch64.utm` — Mac UTM VM
-- `installer-*.tar.gz` — Branded macOS installer
-- `nexusos-asahi-kernel_*_arm64.deb` — Kernel package
+- `nexusos-x86_64.iso` — Live boot (preview; no automated installer)
 - `SHA256SUMS` — Checksums
 
-The NexusOS APT repository is deployed to GitHub Pages at `https://aidiotic.github.io/Operating-system/repo/` (release builds may be signed when maintainers configure a signing key; the committed development mirror may be unsigned).
+**Not published on Releases** (git clone + `./install.sh` on Mac instead): aarch64 rootfs,
+UTM bundles, Asahi kernel packages, and macOS installer tarballs. See
+[Redistribution Policy](docs/REDISTRIBUTION_POLICY.md).
+
+The NexusOS APT repository is deployed to GitHub Pages at
+`https://aidiotic.github.io/Operating-system/repo/` (signed when `NEXUSOS_APT_GPG_*`
+GitHub Actions secrets are configured; otherwise unsigned).
 
 ## Architecture
 
@@ -214,7 +230,7 @@ Build scripts and NexusOS-specific packages in this repository: **MIT** — see 
 
 Release images (rootfs, ISO, kernel packages) bundle third-party software under GPL, LGPL, and other licenses. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Legal notices: [Disclaimer](docs/DISCLAIMER.md) · [Trademarks](docs/TRADEMARKS.md) · [Intended use](docs/INTENDED_USE.md)
+Legal notices: [Disclaimer](docs/DISCLAIMER.md) · [Trademarks](docs/TRADEMARKS.md) · [Intended use](docs/INTENDED_USE.md) · [Redistribution policy](docs/REDISTRIBUTION_POLICY.md)
 
 ## Links
 

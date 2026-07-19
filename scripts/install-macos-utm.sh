@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
-# macOS UTM virtual machine installer.
+# macOS UTM virtual machine installer (Apple Silicon — build from git clone).
 
 set -euo pipefail
 
@@ -11,7 +11,6 @@ source "${ROOT}/scripts/common.sh"
 UTM_APP="/Applications/UTM.app"
 INSTALL_DIR="${HOME}/Applications/NexusOS"
 ARTIFACT="nexusos-aarch64.utm"
-ROOTFS_ARTIFACT="nexusos-aarch64-rootfs.tar.xz"
 
 install_utm() {
   if [[ -d "$UTM_APP" ]]; then
@@ -27,43 +26,56 @@ install_utm() {
   brew install --cask utm
 }
 
-fetch_utm_bundle() {
+build_utm_bundle() {
   local dest_dir="$1"
   mkdir -p "$dest_dir"
   local utm_path="${dest_dir}/${ARTIFACT}"
+  local rootfs="${ROOT}/releases/nexusos-aarch64-rootfs.tar.xz"
 
-  if [[ "${NEXUSOS_FROM_SOURCE:-0}" == "1" ]]; then
-    log "Building UTM bundle from source..."
-    "${ROOT}/build/utm/build-utm.sh"
+  if [[ -f "${ROOT}/releases/${ARTIFACT}" ]]; then
+    log "Using local build: releases/${ARTIFACT}"
     cp "${ROOT}/releases/${ARTIFACT}" "$utm_path"
     return 0
   fi
 
-  local tmp
-  tmp="$(mktemp -d)"
-  if ! download_release "$ARTIFACT" "${tmp}/${ARTIFACT}" 2>/dev/null; then
-    warn "No release artifact found at ${NEXUSOS_RELEASES}/${ARTIFACT}"
-    warn "Build locally: ./build/utm/build-utm.sh  or wait for GitHub Release v${NEXUSOS_VERSION}"
-    die "Download failed — tag v${NEXUSOS_VERSION} may not be published yet."
+  if [[ ! -f "$rootfs" ]]; then
+    cat <<EOF >&2
+
+UTM requires an aarch64 rootfs tarball at:
+  releases/nexusos-aarch64-rootfs.tar.xz
+
+Build on Linux (or CI), then copy into your clone:
+  sudo ./build/rootfs/build-aarch64.sh
+  ./build/utm/build-utm.sh
+
+See docs/REDISTRIBUTION_POLICY.md — UTM bundles are not downloaded from Releases.
+
+EOF
+    die "Missing ${rootfs}"
   fi
-  download_release "SHA256SUMS" "${tmp}/SHA256SUMS" || true
-  verify_checksum "${tmp}/${ARTIFACT}" "${tmp}/SHA256SUMS"
-  cp "${tmp}/${ARTIFACT}" "$utm_path"
-  rm -rf "$tmp"
+
+  log "Packaging UTM bundle from local rootfs..."
+  "${ROOT}/build/utm/build-utm.sh"
+  cp "${ROOT}/releases/${ARTIFACT}" "$utm_path"
 }
 
 main() {
   [[ "$(uname -s)" == "Darwin" ]] || die "UTM install requires macOS."
 
+  if [[ "$(uname -m)" != "arm64" ]]; then
+    die "UTM install is only supported on Apple Silicon. Intel Mac: run ./install.sh --iso"
+  fi
+
   log "NexusOS UTM Virtual Machine Installer"
   log "======================================"
   echo
   warn "NexusOS is provided AS IS without warranty. See docs/DISCLAIMER.md."
+  warn "UTM bundles are built from your git clone — not downloaded from GitHub Releases."
   echo
 
   install_utm
   mkdir -p "$INSTALL_DIR"
-  fetch_utm_bundle "$INSTALL_DIR"
+  build_utm_bundle "$INSTALL_DIR"
 
   local utm_bundle="${INSTALL_DIR}/${ARTIFACT}"
   [[ -e "$utm_bundle" ]] || die "UTM bundle not found at ${utm_bundle}"

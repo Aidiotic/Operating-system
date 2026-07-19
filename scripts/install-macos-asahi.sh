@@ -29,12 +29,11 @@ main() {
   read -r -p "Type YES to accept risks and continue: " confirm
   [[ "$confirm" == "YES" ]] || die "Installation cancelled."
 
-  if [[ "${NEXUSOS_FROM_SOURCE:-0}" == "1" ]]; then
-    log "Building installer from source..."
-    exec "${ROOT}/installer/build-and-run.sh" "$@"
+  if [[ ! -d "${ROOT}/.git" ]] && [[ "${NEXUSOS_FROM_SOURCE:-0}" != "1" ]]; then
+    die "Native Mac install requires a git clone: git clone --recursive ${NEXUSOS_GITHUB}.git"
   fi
 
-  log "Launching Asahi-based NexusOS installer..."
+  log "Launching Asahi-based NexusOS installer (from repository)..."
   exec "${ROOT}/installer/run-installer.sh" "$@"
 }
 

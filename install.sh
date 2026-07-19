@@ -64,8 +64,8 @@ route_installer() {
             log "Use --utm for a virtual machine instead."
             exec "${ROOT}/scripts/install-macos-asahi.sh" "$@"
           elif [[ "$host_arch" == "x86_64" ]]; then
-            log "Intel Mac — installing UTM virtual machine."
-            exec "${ROOT}/scripts/install-macos-utm.sh" "$@"
+            log "Intel Mac — showing live ISO instructions (UTM release artifacts not published)."
+            exec "${ROOT}/scripts/install-linux.sh" --iso-only "$@"
           else
             die "Unsupported Mac architecture: ${host_arch}"
           fi
@@ -86,6 +86,8 @@ route_installer() {
       ;;
     utm)
       [[ "$host_os" == "macos" ]] || die "--utm requires macOS"
+      [[ "$host_arch" == "aarch64" ]] || die "--utm requires Apple Silicon (Intel Mac: use --iso)"
+      [[ -d "${ROOT}/.git" ]] || die "--utm requires a git clone (see docs/REDISTRIBUTION_POLICY.md)"
       exec "${ROOT}/scripts/install-macos-utm.sh" "$@"
       ;;
     native)
