@@ -1,8 +1,7 @@
 # NexusOS Windows Installer
-# Run in PowerShell (Admin recommended for WSL2):
+# Recommended: git clone, then .\install.ps1
+# Convenience only (no integrity verification):
 #   irm https://raw.githubusercontent.com/Aidiotic/Operating-system/main/install.ps1 | iex
-# Or from a cloned repo:
-#   .\install.ps1
 
 param(
     [switch]$Wsl,
@@ -12,6 +11,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Repo = if ($env:NEXUSOS_REPO) { $env:NEXUSOS_REPO } else { "Aidiotic/Operating-system" }
+$AllowFork = $env:NEXUSOS_ALLOW_FORK_REPO -eq "1"
+
+if ($Repo -ne "Aidiotic/Operating-system" -and -not $AllowFork) {
+    Write-Error "Unsupported NEXUSOS_REPO=$Repo. Clone the repo and review scripts, or set NEXUSOS_ALLOW_FORK_REPO=1 for a trusted fork."
+}
 
 function Show-Help {
     Write-Host @"
@@ -27,6 +31,8 @@ Requires: Windows 10 21H2+ or Windows 11 with WSL2
 }
 
 if ($Help) { Show-Help; exit 0 }
+
+Write-Warning "NexusOS is provided AS IS without warranty. See docs/DISCLAIMER.md in the cloned repo."
 
 if ($Iso) {
     if (Get-Command bash -ErrorAction SilentlyContinue) {

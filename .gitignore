@@ -28,3 +28,18 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# Unsanitized top-level results (Strict archives)
+/results/*.md
+/results/*.html
+/results/*.pdf
+/results/sanitized-publish-log.md
+/results/report-quality/
+/results/report-leak-audit/
+/Red team reports/
+/audit - reports/
+/legal - results/
+/marketing - reports/
+/generalist reports/
+/github team reports/
+/git polish - reports/

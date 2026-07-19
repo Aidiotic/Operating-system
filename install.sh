@@ -23,8 +23,8 @@ Install NexusOS on Mac or Windows:
   ./install.sh --wsl          Windows: import WSL2 distro
   ./install.sh --iso          Dual-boot ISO instructions
 
-One-liner:
-  curl -fsSL ${NEXUSOS_GITHUB}/raw/main/install.sh | sh
+One-liner (clone + install):
+  curl -fsSL ${NEXUSOS_GITHUB}/raw/main/scripts/bootstrap.sh | sh
 
 Documentation: ${NEXUSOS_GITHUB}#readme
 EOF
@@ -50,6 +50,8 @@ route_installer() {
   log "NexusOS Installer v${NEXUSOS_VERSION}"
   log "https://github.com/${NEXUSOS_REPO}"
   log "Detected: os=${host_os} arch=${host_arch} wsl=${host_wsl}"
+  echo
+  warn "NexusOS is provided AS IS without warranty. See docs/DISCLAIMER.md."
   echo
   export NEXUSOS_FROM_SOURCE="${FROM_SOURCE}"
 

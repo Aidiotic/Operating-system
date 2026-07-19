@@ -42,16 +42,25 @@ menuentry "NexusOS Live (try without installing)" {
     initrd /live/initrd.img
 }
 
-menuentry "Install NexusOS (dual-boot)" {
-    linux /live/vmlinuz boot=live quiet splash nexusos.install
+menuentry "Install NexusOS (preview — unavailable)" {
+    linux /live/vmlinuz boot=live quiet splash
     initrd /live/initrd.img
 }
 EOF
 
   cp "${ROOT}/configs/grub/theme.txt" "$WORK/boot/grub/" 2>/dev/null || true
 
-  # Placeholder kernel/initrd — real CI builds extract from rootfs
-  touch "$WORK/live/vmlinuz" "$WORK/live/initrd.img"
+  local vmlinuz initrd
+  vmlinuz="$(find "$WORK/live/filesystem" -path '*/boot/vmlinuz*' -type f 2>/dev/null | sort -V | tail -1 || true)"
+  initrd="$(find "$WORK/live/filesystem" \( -path '*/boot/initrd.img*' -o -path '*/boot/initrd-*' \) -type f 2>/dev/null | sort -V | tail -1 || true)"
+
+  if [[ -n "$vmlinuz" && -n "$initrd" ]]; then
+    cp "$vmlinuz" "$WORK/live/vmlinuz"
+    cp "$initrd" "$WORK/live/initrd.img"
+    log "Using kernel: $(basename "$vmlinuz")"
+  else
+    die "No bootable kernel/initrd in rootfs. Install linux-image in rootfs build or run build-x86_64.sh with NEXUSOS_CI_MINIMAL=0"
+  fi
 
   log "Creating ISO with grub-mkrescue..."
   grub-mkrescue -o "${OUTPUT}/${ISO_NAME}" "$WORK" 2>/dev/null || {

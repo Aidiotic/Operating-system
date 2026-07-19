@@ -20,11 +20,14 @@ main() {
   log "NexusOS Apple Silicon Native Installer"
   log "======================================="
   echo
-  warn "This will resize your macOS partition and install NexusOS for dual-boot."
+  warn "NexusOS is provided AS IS. Installation may cause data loss or an unbootable system."
+  warn "Risks include: partition resize, boot-loader changes, and unbootable macOS."
+  warn "Apple Silicon builds depend on proprietary Apple firmware via the Asahi Linux platform."
+  warn "Maintain Apple Recovery options. Dual-boot stability is not guaranteed."
   warn "Back up your Mac with Time Machine before continuing."
   echo
-  read -r -p "Continue? [y/N] " confirm
-  [[ "${confirm,,}" == "y" ]] || die "Installation cancelled."
+  read -r -p "Type YES to accept risks and continue: " confirm
+  [[ "$confirm" == "YES" ]] || die "Installation cancelled."
 
   if [[ "${NEXUSOS_FROM_SOURCE:-0}" == "1" ]]; then
     log "Building installer from source..."

@@ -68,7 +68,7 @@ tar xf "$PKG"
 echo
 if [ "$USER" != "root" ]; then
     echo "The installer needs root — you may be prompted for your password."
-    exec caffeinate -dis sudo -E ./install.sh "$@"
+    exec caffeinate -dis sudo ./install.sh "$@"
 else
     exec caffeinate -dis ./install.sh "$@"
 fi

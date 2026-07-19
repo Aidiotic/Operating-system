@@ -42,7 +42,7 @@ fetch_rootfs() {
     warn "Publish a release (git tag v${NEXUSOS_VERSION}) or run: sudo ./build/rootfs/build-x86_64.sh"
     die "Download failed."
   fi
-  download_release "SHA256SUMS" "${tmp}/SHA256SUMS" || true
+  download_release "SHA256SUMS" "${tmp}/SHA256SUMS"
   verify_checksum "${tmp}/${ARTIFACT}" "${tmp}/SHA256SUMS"
   cp "${tmp}/${ARTIFACT}" "$dest"
   rm -rf "$tmp"
@@ -65,13 +65,17 @@ systemd=true
 default=nexus
 EOF
     fi
-    nexus-welcome --non-interactive || true
+    nexus-welcome --force || true
   ' || warn "Post-install config will run on first login."
 }
 
 main() {
   log "NexusOS WSL2 Installer"
   log "======================"
+  echo
+  warn "NexusOS is provided AS IS without warranty. See docs/DISCLAIMER.md."
+  warn "Importing a rootfs modifies your system. Back up important data first."
+  echo
 
   check_wsl
 
@@ -98,7 +102,7 @@ main() {
   echo
   log "NexusOS installed successfully!"
   log "Launch with:  wsl -d NexusOS"
-  log "Default user: nexus (password: nexus — change with passwd)"
+  log "Default user: nexus (password expired — set on first login with: wsl -d NexusOS)"
   log "GUI apps:     export DISPLAY (WSLg auto-configures on Win11)"
   log "Software:     nexus-store  or  sudo apt install <package>"
   log "Updates:      nexus-update"

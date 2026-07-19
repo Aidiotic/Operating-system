@@ -5,6 +5,7 @@ set -euo pipefail
 
 echo "NexusOS Doctor"
 echo "=============="
+echo "Configuration check only — not a security or compliance certification."
 echo
 
 checks=0

@@ -75,6 +75,7 @@ interactive() {
   echo "║       NexusOS Software Center        ║"
   echo "╚══════════════════════════════════════╝"
   echo
+  echo "Third-party Debian packages — not reviewed or endorsed by NexusOS."
   [[ -f "$NEXUS_APT" ]] && echo "Source: NexusOS APT repository"
   echo
   list_packages

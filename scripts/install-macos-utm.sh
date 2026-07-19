@@ -57,6 +57,9 @@ main() {
 
   log "NexusOS UTM Virtual Machine Installer"
   log "======================================"
+  echo
+  warn "NexusOS is provided AS IS without warranty. See docs/DISCLAIMER.md."
+  echo
 
   install_utm
   mkdir -p "$INSTALL_DIR"
@@ -70,7 +73,7 @@ main() {
 
   echo
   log "Done! Start the NexusOS VM from UTM."
-  log "Default login: nexus / nexus (change on first boot)"
+  log "Default login: nexus (password expires on first login — run nexus-welcome)"
   log "Run 'nexus-welcome' inside the VM for setup wizard."
 }
 

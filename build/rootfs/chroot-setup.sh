@@ -53,9 +53,21 @@ if [[ -f "${ROOT}/packages/nexus-keyring/nexusos-archive-keyring.gpg" ]]; then
     "${CHROOT}/usr/share/keyrings/"
 fi
 
+mkdir -p "${CHROOT}/usr/share/nexusos"
+for legal_doc in THIRD_PARTY_NOTICES.md docs/DISCLAIMER.md docs/TRADEMARKS.md docs/GPL_SOURCE_OFFER docs/INTENDED_USE.md; do
+  [[ -f "${ROOT}/${legal_doc}" ]] && cp "${ROOT}/${legal_doc}" "${CHROOT}/usr/share/nexusos/"
+done
+
 if ! grep -q '^nexus:' "${CHROOT}/etc/passwd" 2>/dev/null; then
   chroot "$CHROOT" useradd -m -s /bin/bash -G sudo,adm,cdrom,dip,plugdev nexus || true
-  echo 'nexus:nexus' | chroot "$CHROOT" chpasswd || true
+  # Random bootstrap password; expire immediately so first login must set a new password.
+  local bootstrap_pw
+  bootstrap_pw="$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 20)"
+  echo "nexus:${bootstrap_pw}" | chroot "$CHROOT" chpasswd || true
+  chroot "$CHROOT" passwd -e nexus 2>/dev/null || true
+  mkdir -p "${CHROOT}/etc/nexusos"
+  echo "1" > "${CHROOT}/etc/nexusos/force-password-change"
+  chmod 600 "${CHROOT}/etc/nexusos/force-password-change"
 fi
 
 enable_unit "NetworkManager.service"

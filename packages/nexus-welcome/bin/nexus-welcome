@@ -8,12 +8,17 @@ FLAG="/home/nexus/.nexus-welcome-done"
 run_wizard() {
   echo
   echo "  ╔═══════════════════════════════════════════╗"
-  echo "  ║     Welcome to NexusOS!                   ║"
-  echo "  ║     Your custom Linux operating system    ║"
+  echo "  ║     Welcome to NexusOS (preview)          ║"
+  echo "  ║     Independent Linux distribution        ║"
   echo "  ╚═══════════════════════════════════════════╝"
   echo
+  echo "  Engineering preview — see /usr/share/nexusos/DISCLAIMER.md"
+  echo
 
-  if [[ "${1:-}" == "--non-interactive" ]]; then
+  local force_pw=0
+  [[ -f /etc/nexusos/force-password-change ]] && force_pw=1
+
+  if [[ "${1:-}" == "--non-interactive" && "$force_pw" -eq 0 ]]; then
     touch "$FLAG" 2>/dev/null || true
     return 0
   fi
@@ -21,9 +26,15 @@ run_wizard() {
   read -r -p "  Enter your display name [nexus]: " display_name
   display_name="${display_name:-nexus}"
 
-  read -r -p "  Change password now? [Y/n]: " change_pw
-  if [[ "${change_pw:-Y}" != "n" && "${change_pw:-Y}" != "N" ]]; then
+  if [[ "$force_pw" -eq 1 ]]; then
+    echo "  You must set a new password before continuing."
     passwd
+    sudo rm -f /etc/nexusos/force-password-change 2>/dev/null || rm -f /etc/nexusos/force-password-change 2>/dev/null || true
+  else
+    read -r -p "  Change password now? [Y/n]: " change_pw
+    if [[ "${change_pw:-Y}" != "n" && "${change_pw:-Y}" != "N" ]]; then
+      passwd
+    fi
   fi
 
   echo

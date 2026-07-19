@@ -19,7 +19,7 @@ jobs:
         run: |
           find . -name '*.sh' -not -path './installer/upstream/*' | while read -r f; do
             echo "Checking $f"
-            shellcheck -e SC1091,SC2034,SC2164 "$f" || true
+            shellcheck -e SC1091,SC2034,SC2164 "$f"
           done
 
       - name: Run healthcheck

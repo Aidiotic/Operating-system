@@ -9,6 +9,23 @@ RELEASES="${ROOT}/installer/releases"
 UPSTREAM="${ROOT}/installer/upstream"
 VERSION="$(cat "${ROOT}/VERSION")"
 
+sync_installer_metadata() {
+  local ver="$1"
+  python3 - "$ver" "${ROOT}/installer/nexusos-installer-data.json" <<'PY'
+import json, sys
+ver, path = sys.argv[1], sys.argv[2]
+with open(path, "r", encoding="utf-8") as f:
+    data = json.load(f)
+data["version"] = ver
+data["repo_base"] = f"https://github.com/Aidiotic/Operating-system/releases/download/v{ver}"
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+PY
+}
+
+sync_installer_metadata "$VERSION"
+
 log() { printf '[installer-build] %s\n' "$*"; }
 die() { printf '[installer-build] ERROR: %s\n' "$*" >&2; exit 1; }
 

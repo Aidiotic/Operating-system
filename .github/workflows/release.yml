@@ -39,6 +39,7 @@ jobs:
         env:
           NEXUSOS_APT_GPG_PRIVATE_KEY: ${{ secrets.NEXUSOS_APT_GPG_PRIVATE_KEY }}
           NEXUSOS_APT_GPG_KEY_ID: ${{ secrets.NEXUSOS_APT_GPG_KEY_ID }}
+          NEXUSOS_REQUIRE_SIGNED_REPO: "1"
         run: |
           chmod +x build/packages/build-debs.sh build/repo/*.sh
           ./build/repo/publish-repo.sh
@@ -73,7 +74,7 @@ jobs:
           chmod +x build/packages/build-debs.sh build/repo/*.sh
           ./build/packages/build-debs.sh
       - run: sudo env NEXUSOS_CI_MINIMAL=0 ./build/rootfs/build-x86_64.sh
-      - run: sudo ./build/iso/build-iso.sh || true
+      - run: sudo ./build/iso/build-iso.sh
       - uses: actions/upload-artifact@v4
         with:
           name: x86_64-artifacts
