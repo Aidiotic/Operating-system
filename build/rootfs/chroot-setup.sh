@@ -24,7 +24,7 @@ enable_unit() {
   done
 
   [[ -n "$unit_file" ]] || { log "Skipping missing unit: ${unit}"; return 0; }
-  local rel="/${unit_file#${CHROOT}/}"
+  local rel="/${unit_file#"${CHROOT}"/}"
   mkdir -p "${CHROOT}/etc/systemd/system/${target}"
   ln -sf "$rel" "${CHROOT}/etc/systemd/system/${target}/${unit}"
 }
@@ -61,7 +61,6 @@ done
 if ! grep -q '^nexus:' "${CHROOT}/etc/passwd" 2>/dev/null; then
   chroot "$CHROOT" useradd -m -s /bin/bash -G sudo,adm,cdrom,dip,plugdev nexus || true
   # Random bootstrap password; expire immediately so first login must set a new password.
-  local bootstrap_pw
   bootstrap_pw="$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 20)"
   echo "nexus:${bootstrap_pw}" | chroot "$CHROOT" chpasswd || true
   chroot "$CHROOT" passwd -e nexus 2>/dev/null || true

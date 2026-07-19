@@ -42,10 +42,7 @@ menuentry "NexusOS Live (try without installing)" {
     initrd /live/initrd.img
 }
 
-menuentry "Install NexusOS (preview — unavailable)" {
-    linux /live/vmlinuz boot=live quiet splash
-    initrd /live/initrd.img
-}
+# Install entry omitted until a real installer hook exists (preview posture).
 EOF
 
   cp "${ROOT}/configs/grub/theme.txt" "$WORK/boot/grub/" 2>/dev/null || true

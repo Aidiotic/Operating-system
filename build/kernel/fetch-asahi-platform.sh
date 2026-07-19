@@ -54,7 +54,7 @@ fetch_kernel_deb() {
     die "Could not download linux-image-asahi from ${ASAHI_REPO_URL}"
 
   local deb
-  deb="$(ls -1 linux-image-asahi*.deb | head -1)"
+  deb="$(find . -maxdepth 1 -name 'linux-image-asahi*.deb' -print | head -1)"
   cp "$deb" "${ROOT}/releases/nexusos-asahi-kernel_$(cat "${ROOT}/VERSION")_arm64.deb"
   log "Fetched: releases/nexusos-asahi-kernel_*_arm64.deb"
 }

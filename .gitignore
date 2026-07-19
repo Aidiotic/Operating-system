@@ -22,6 +22,9 @@ installer/dl/
 packages/nexus-keyring/private_key_b64.txt.NOT_FOR_COMMIT
 packages/nexus-keyring/*.asc
 
+# Local tooling
+.venv-pdf/
+
 # Editor / OS
 .DS_Store
 Thumbs.db

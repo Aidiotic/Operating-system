@@ -23,7 +23,7 @@ Install NexusOS on Mac or Windows:
   ./install.sh --wsl          Windows: import WSL2 distro
   ./install.sh --iso          Dual-boot ISO instructions
 
-One-liner (clone + install):
+One-liner (convenience only — no integrity verification; review scripts/bootstrap.sh first):
   curl -fsSL ${NEXUSOS_GITHUB}/raw/main/scripts/bootstrap.sh | sh
 
 Documentation: ${NEXUSOS_GITHUB}#readme
