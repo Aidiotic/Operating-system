@@ -6,7 +6,7 @@ ConditionPathExists=!/home/nexus/.nexus-welcome-done
 [Service]
 Type=oneshot
 User=nexus
-ExecStart=/usr/local/bin/nexus-welcome
+ExecStart=/usr/bin/nexus-welcome
 RemainAfterExit=yes
 
 [Install]

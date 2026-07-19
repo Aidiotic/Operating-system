@@ -1,0 +1,23 @@
+NexusOS GPL/LGPL Source Offer
+=============================
+
+Corresponding source for GPL and LGPL components included in NexusOS release
+artifacts is available as follows:
+
+1. **Debian packages** — run `apt source <package-name>` on a NexusOS system, or
+   retrieve sources from https://snapshot.debian.org for the Debian release used
+   at build time.
+
+2. **Asahi Linux platform** (Apple Silicon) — https://github.com/AsahiLinux
+
+3. **NexusOS-authored packages** — https://github.com/Aidiotic/Operating-system
+
+4. **Written offer** — source requests may be submitted via GitHub Issues:
+   https://github.com/Aidiotic/Operating-system/issues
+
+A per-release package manifest (`SOURCES-{VERSION}.txt`) is published alongside
+tagged releases when available.
+
+**Draft — counsel review required:** This engineering notice is not a final
+GPL §3 compliance determination. Obtain qualified legal review before broad
+binary redistribution.

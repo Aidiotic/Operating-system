@@ -89,19 +89,42 @@ main() {
         <key>Target</key>
         <string>virt</string>
     </dict>
+    <key>Drives</key>
+    <array>
+        <dict>
+            <key>ImageName</key>
+            <string>disk.img</string>
+            <key>ImageType</key>
+            <string>Disk</string>
+            <key>Interface</key>
+            <string>VirtIO</string>
+            <key>ReadOnly</key>
+            <false/>
+        </dict>
+    </array>
 </dict>
 </plist>
 EOF
 
   cp "$ROOTFS" "$WORK/Images/nexusos-rootfs.tar.xz"
 
+  log "Creating virtual disk image..."
+  if command -v qemu-img >/dev/null 2>&1; then
+    qemu-img create -f qcow2 "$WORK/Images/disk.img" 16G
+  else
+    truncate -s 16G "$WORK/Images/disk.img"
+  fi
+
   cat > "$WORK/README.txt" <<'EOF'
 NexusOS UTM Virtual Machine
 ============================
 
+NexusOS is provided AS IS without warranty. Independent project — not
+affiliated with UTM or Apple. See /usr/share/nexusos/DISCLAIMER.md in the VM.
+
 1. Open this .utm bundle in UTM (double-click)
 2. First boot extracts rootfs — may take a few minutes
-3. Login: nexus / nexus
+3. Login: nexus (password expires on first login — run nexus-welcome)
 4. Run: nexus-welcome
 
 For native Apple Silicon dual-boot, use:

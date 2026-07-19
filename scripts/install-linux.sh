@@ -11,8 +11,11 @@ source "${ROOT}/scripts/common.sh"
 show_iso_instructions() {
   cat <<EOF
 
-NexusOS Dual-Boot ISO Installation
-===================================
+NexusOS Dual-Boot ISO (preview — live boot only)
+================================================
+
+Preview: automated dual-boot installation is not available in v1.0.0.
+Use live boot to try NexusOS; manual partitioning is required for install.
 
 1. Download the ISO:
    ${NEXUSOS_RELEASES}/nexusos-x86_64.iso
@@ -25,9 +28,9 @@ NexusOS Dual-Boot ISO Installation
 
    Or use Ventoy / Rufus on Windows.
 
-4. Boot from USB and follow the installer.
+4. Boot from USB for live environment.
 
-5. The installer will offer dual-boot with existing OS when detected.
+5. Dual-boot installer: not yet available — use live session or WSL path.
 
 Build ISO locally:
    ./build/iso/build-iso.sh

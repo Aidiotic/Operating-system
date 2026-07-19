@@ -44,6 +44,8 @@ run_from_release_tarball() {
   pkg_ver="$(curl -fsSL "${NEXUSOS_RELEASES}/installer-latest" 2>/dev/null || echo "$NEXUSOS_VERSION")"
   pkg="installer-${pkg_ver}.tar.gz"
   curl -fsSL -o "$pkg" "${NEXUSOS_RELEASES}/${pkg}" || return 1
+  curl -fsSL -o SHA256SUMS "${NEXUSOS_RELEASES}/SHA256SUMS" || return 1
+  verify_checksum "$pkg" SHA256SUMS
   curl -fsSL -o installer_data.json "$INSTALLER_DATA" || \
     curl -fsSL -o installer_data.json "$INSTALLER_DATA_ALT"
   tar xf "$pkg"
@@ -95,7 +97,7 @@ main() {
   if [[ -f install.sh ]]; then
     if [[ "$EUID" -ne 0 ]]; then
       log "Installer requires root — requesting sudo..."
-      exec sudo -E ./install.sh "$@"
+      exec sudo ./install.sh "$@"
     else
       exec ./install.sh "$@"
     fi

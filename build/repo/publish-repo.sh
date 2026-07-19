@@ -23,7 +23,10 @@ sign_repo() {
   trap 'rm -rf "$GNUPGHOME"' RETURN
 
   if [[ -z "${NEXUSOS_APT_GPG_PRIVATE_KEY:-}" ]]; then
-    log "No NEXUSOS_APT_GPG_PRIVATE_KEY — publishing unsigned Release (dev only)"
+    if [[ "${CI:-}" == "true" ]] || [[ "${NEXUSOS_REQUIRE_SIGNED_REPO:-1}" == "1" ]]; then
+      die "NEXUSOS_APT_GPG_PRIVATE_KEY required for signed APT publish (set NEXUSOS_REQUIRE_SIGNED_REPO=0 for local dev only)"
+    fi
+    log "No NEXUSOS_APT_GPG_PRIVATE_KEY — publishing unsigned Release (local dev only)"
     return 0
   fi
 
@@ -78,7 +81,7 @@ main() {
   log "Generating Packages indices..."
   for arch in amd64 arm64; do
     mkdir -p "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}"
-    dpkg-scanpackages --arch "$arch" "${REPO_OUT}/pool" /dev/null \
+    (cd "$REPO_OUT" && dpkg-scanpackages --arch "$arch" pool /dev/null) \
       > "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}/Packages"
     gzip -9c "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}/Packages" \
       > "${REPO_OUT}/dists/${SUITE}/main/binary-${arch}/Packages.gz"

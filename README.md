@@ -1,20 +1,24 @@
 # NexusOS
 
-A custom Linux distribution for **Mac** and **Windows**. Clone the repo and run the installer — like [Asahi Linux](https://asahilinux.org), with NexusOS branding, packages, and desktop tools on top of the Asahi platform where Apple Silicon hardware requires it.
+> **Preview release (v1.0.0):** Engineering preview — not legal clearance for redistribution of release binaries. See [Disclaimer](docs/DISCLAIMER.md), [Trademarks](docs/TRADEMARKS.md), and [Third-Party Notices](THIRD_PARTY_NOTICES.md).
+
+A custom Linux distribution for **Mac** and **Windows**. Clone the repo and run the installer — inspired by the [Asahi Linux](https://asahilinux.org) install experience. **NexusOS is an independent project, not affiliated with or endorsed by Asahi Linux, Apple, or Microsoft.**
 
 ## Quick Install
 
-### One-liner
+### One-liner (convenience only)
+
+No integrity verification — review `scripts/bootstrap.sh` before running:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Aidiotic/Operating-system/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Aidiotic/Operating-system/main/scripts/bootstrap.sh | sh
 ```
 
-### Git clone
+### Git clone (recommended)
 
 ```bash
 git clone https://github.com/Aidiotic/Operating-system.git
-cd operating-system
+cd Operating-system
 ./install.sh
 ```
 
@@ -28,7 +32,7 @@ The installer auto-detects your platform and picks the right install method.
 | **Mac (any)** | UTM virtual machine | `./install.sh --utm` |
 | **Mac Intel** | UTM VM (recommended) or EFI ISO | `./install.sh --utm` |
 | **Windows 10/11** | WSL2 distro | `./install.sh` or `./install.sh --wsl` |
-| **Windows / Linux PC** | Dual-boot ISO | `./install.sh --iso` |
+| **Windows / Linux PC** | Dual-boot ISO (preview — installer stub) | `./install.sh --iso` |
 
 ## What's Included
 
@@ -41,7 +45,7 @@ The installer auto-detects your platform and picks the right install method.
 - **nexus-welcome** — first-boot setup wizard
 - **Terminal**, Files (Nautilus), Calculator, Text Editor
 
-Default login: `nexus` / `nexus` (change on first boot)
+Default user: `nexus` — password expires on first login; `nexus-welcome` prompts you to set a new password.
 
 ## Install Details
 
@@ -75,7 +79,7 @@ cd Operating-system
 .\install.ps1
 ```
 
-Or one-liner:
+Or one-liner (convenience only — no integrity verification; review `install.ps1` first):
 
 ```powershell
 irm https://raw.githubusercontent.com/Aidiotic/Operating-system/main/install.ps1 | iex
@@ -91,7 +95,7 @@ GUI apps work via WSLg on Windows 11.
 
 ### Dual-boot ISO
 
-Download `nexusos-x86_64.iso` from [GitHub Releases](https://github.com/aidiotic/operating-system/releases) or build locally:
+Download `nexusos-x86_64.iso` from [GitHub Releases](https://github.com/Aidiotic/Operating-system/releases) or build locally:
 
 ```bash
 sudo ./build/iso/build-iso.sh
@@ -136,7 +140,7 @@ build/iso/                 Dual-boot ISO builder
 build/utm/                 macOS UTM VM builder
 build/kernel/              Asahi kernel build + platform fetch
 build/packages/            .deb package builder
-build/repo/                Signed APT repo for GitHub Pages
+build/repo/                APT repo for GitHub Pages (signed when CI signing key is configured)
 docs/repo/                 Published APT tree (Pages)
 installer/                 Vendored Asahi installer + NexusOS metadata
 packages/                  NexusOS custom tools (store, settings, welcome)
@@ -176,7 +180,7 @@ GitHub Actions publishes:
 - `nexusos-asahi-kernel_*_arm64.deb` — Kernel package
 - `SHA256SUMS` — Checksums
 
-The NexusOS APT repository is deployed to GitHub Pages at `https://aidiotic.github.io/Operating-system/repo/`.
+The NexusOS APT repository is deployed to GitHub Pages at `https://aidiotic.github.io/Operating-system/repo/` (release builds may be signed when maintainers configure a signing key; the committed development mirror may be unsigned).
 
 ## Architecture
 
@@ -198,11 +202,15 @@ NexusOS is a **two-layer** distribution (similar in spirit to Fedora Asahi Remix
 
 - **WSL2** — Windows import of x86_64 rootfs tarball
 - **UTM** — macOS virtualization bundle (aarch64)
-- **ISO** — dual-boot x86_64 image
+- **ISO** — dual-boot x86_64 image (preview; live boot supported when kernel is present in rootfs)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Build scripts and NexusOS-specific packages in this repository: **MIT** — see [LICENSE](LICENSE).
+
+Release images (rootfs, ISO, kernel packages) bundle third-party software under GPL, LGPL, and other licenses. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+Legal notices: [Disclaimer](docs/DISCLAIMER.md) · [Trademarks](docs/TRADEMARKS.md) · [Intended use](docs/INTENDED_USE.md)
 
 ## Links
 

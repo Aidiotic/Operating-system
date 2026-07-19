@@ -1,0 +1,16 @@
+# NexusOS 1.0.0 — source manifest (engineering draft)
+#
+# Full per-package version lockfiles are generated during CI rootfs builds.
+# This manifest documents primary upstream sources for counsel and packagers.
+
+debian_release=bookworm
+debian_snapshot=https://snapshot.debian.org/archive/debian/20240701T000000Z
+
+asahi_linux=https://github.com/AsahiLinux
+asahi_installer=https://github.com/AsahiLinux/asahi-installer
+asahi_kernel_repo=https://github.com/AsahiLinux/linux
+
+nexusos_repository=https://github.com/Aidiotic/Operating-system
+nexusos_tag=v1.0.0
+
+on_system_offer=/usr/share/nexusos/GPL_SOURCE_OFFER

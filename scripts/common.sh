@@ -7,6 +7,22 @@ set -euo pipefail
 _nexusos_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NEXUSOS_VERSION="${NEXUSOS_VERSION:-$(cat "${_nexusos_root}/VERSION" 2>/dev/null || echo 1.0.0)}"
 NEXUSOS_REPO="${NEXUSOS_REPO:-Aidiotic/Operating-system}"
+
+# Fail closed: only allow known repo slugs unless explicitly overridden for dev forks.
+_validate_nexusos_repo() {
+  case "$NEXUSOS_REPO" in
+    Aidiotic/Operating-system) return 0 ;;
+    *)
+      if [[ "${NEXUSOS_ALLOW_FORK_REPO:-0}" == "1" ]]; then
+        warn "Using non-default NEXUSOS_REPO=${NEXUSOS_REPO} (fork mode)"
+        return 0
+      fi
+      die "Unsupported NEXUSOS_REPO=${NEXUSOS_REPO}. Clone the repo and review scripts, or set NEXUSOS_ALLOW_FORK_REPO=1 for a trusted fork."
+      ;;
+  esac
+}
+_validate_nexusos_repo
+
 NEXUSOS_GITHUB="https://github.com/${NEXUSOS_REPO}"
 NEXUSOS_RELEASES="https://github.com/${NEXUSOS_REPO}/releases/download/v${NEXUSOS_VERSION}"
 
@@ -54,8 +70,7 @@ verify_checksum() {
   local sums_file="$2"
 
   if [[ ! -f "$sums_file" ]]; then
-    warn "No checksum file at $sums_file — skipping verification"
-    return 0
+    die "Checksum file required but missing: $sums_file"
   fi
 
   local base
